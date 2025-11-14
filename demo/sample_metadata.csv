@@ -1,0 +1,6 @@
+cid,metadata_json
+QR001,{"product_name": "Widget A", "batch_number": "BATCH001", "pressure_threshold": 50.5, "temperature_range": {"min": 20, "max": 30}}
+QR002,{"product_name": "Widget B", "batch_number": "BATCH002", "pressure_threshold": 45.0, "temperature_range": {"min": 18, "max": 28}}
+QR003,{"product_name": "Widget C", "batch_number": "BATCH003", "pressure_threshold": 55.0, "temperature_range": {"min": 22, "max": 32}}
+QR004,{"product_name": "Widget A", "batch_number": "BATCH004", "pressure_threshold": 48.0, "temperature_range": {"min": 19, "max": 29}}
+QR005,{"product_name": "Widget D", "batch_number": "BATCH005", "pressure_threshold": 52.0, "temperature_range": {"min": 21, "max": 31}}

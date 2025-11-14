@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: docker.io/library/postgres:15
+    environment:
+      POSTGRES_DB: context_edge
+      POSTGRES_USER: context_user
+      POSTGRES_PASSWORD: context_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U context_user -d context_edge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: docker.io/library/redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  context-service:
+    build: ./context-service
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://context_user:context_pass@postgres:5432/context_edge
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./context-service:/app
+
+  data-ingestion:
+    build: ./data-ingestion
+    ports:
+      - "8001:8001"
+    environment:
+      STORAGE_PATH: /app/storage/ldos
+    volumes:
+      - ./data-ingestion:/app
+      - ldo_storage:/app/storage/ldos
+
+volumes:
+  postgres_data:
+  redis_data:
+  ldo_storage:

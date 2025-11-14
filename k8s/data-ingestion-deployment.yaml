@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-ingestion
+  namespace: context-edge
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8001
+      targetPort: 8001
+  selector:
+    app: data-ingestion
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-ingestion
+  namespace: context-edge
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: data-ingestion
+  template:
+    metadata:
+      labels:
+        app: data-ingestion
+    spec:
+      containers:
+        - name: data-ingestion
+          image: context-edge/data-ingestion:latest
+          ports:
+            - containerPort: 8001
+          env:
+            - name: STORAGE_PATH
+              value: /app/storage/ldos
+          volumeMounts:
+            - name: ldo-storage
+              mountPath: /app/storage/ldos
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+      volumes:
+        - name: ldo-storage
+          persistentVolumeClaim:
+            claimName: ldo-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldo-storage-pvc
+  namespace: context-edge
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi

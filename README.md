@@ -81,7 +81,7 @@ Data scientist labels data           100% accurate        Alerts engineer
 
 **What makes CIM different:**
 - **Physical identifiers** (QR codes) trigger context retrieval from **Industrial RAG** (Redis store)
-- **Multi-protocol fusion** - OPC UA, Modbus TCP, EtherNet/IP sensor data
+- **Multi-protocol fusion** - OPC UA, Modbus TCP/RTU, EtherNet/IP, PROFINET/S7 sensor data (85%+ PLC coverage)
 - **Edge AI** - NVIDIA Jetson devices run ML models locally (sub-100ms latency)
 - **Labeled Data Objects (LDOs)** - Perfect training data for continuous model improvement
 
@@ -141,8 +141,8 @@ Data scientist labels data           100% accurate        Alerts engineer
 └─────────────────────────────────────────────────────────────┘
          ↓ (reads from)
 ┌─────────────────────────────────────────────────────────────┐
-│  INDUSTRIAL PROTOCOLS                                       │
-│  • OPC UA Servers  • Modbus TCP PLCs  • EtherNet/IP        │
+│  INDUSTRIAL PROTOCOLS (85%+ Market Coverage)                │
+│  • OPC UA  • Modbus TCP/RTU  • EtherNet/IP  • PROFINET/S7  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -507,10 +507,26 @@ print(f"AI Prediction: {ldo.get('ai_inference', {}).get('failure_mode', 'Normal'
 - **OpenCV** - Computer vision
 - **PyTorch** - Model training & export
 
-### **Industrial Protocols**
-- **OPC UA** - Factory automation standard
-- **Modbus TCP** - PLC communication
-- **EtherNet/IP** - Industrial Ethernet
+### **Industrial Protocols (85%+ Market Coverage)**
+
+Context Edge supports **5 major industrial protocols**, covering 85%+ of global manufacturing PLCs:
+
+| Protocol | Status | Port | Use Case | PLC Brands |
+|----------|--------|------|----------|------------|
+| **OPC UA** | ✅ Implemented | 4840 | Universal protocol | Siemens, Allen-Bradley, ABB, B&R |
+| **Modbus TCP** | ✅ Implemented | 502 | Legacy/distributed I/O | Schneider, Emerson, legacy PLCs |
+| **EtherNet/IP** | ✅ **NEW!** | 44818 | Allen-Bradley PLCs | Rockwell, Allen-Bradley |
+| **PROFINET/S7** | ✅ **NEW!** | 102 | Siemens PLCs | Siemens S7-300/400/1200/1500 |
+| **Modbus RTU** | ✅ **NEW!** | Serial | Serial legacy devices | Pre-2000 PLCs, RS-232/RS-485 |
+
+**Libraries Used:**
+- `opcua==0.98.13` - OPC UA client
+- `pymodbus==3.6.6` - Modbus TCP/RTU
+- `pycomm3==1.2.14` - EtherNet/IP (Allen-Bradley)
+- `python-snap7==1.3` - PROFINET/S7 (Siemens)
+- `pyserial==3.5` - Serial communication
+
+**See:** [Industrial Protocol Setup Guide](docs/industrial-protocol-setup.md) for configuration examples.
 
 ### **MLOps**
 - **GitHub Actions** - CI/CD pipeline
@@ -640,11 +656,14 @@ Context-Edge/
 │   └── storage/            # S3/MinIO integration
 ├── edge-device/            # Edge SDK (Python)
 │   ├── context_edge/
-│   │   ├── context_injector.py   # CIM (patent core)
-│   │   ├── qr_decoder.py         # Vision
-│   │   ├── opcua_protocol.py     # OPC UA client
-│   │   ├── modbus_protocol.py    # Modbus TCP client
-│   │   └── ldo_generator.py      # Output
+│   │   ├── context_injector.py      # CIM (patent core)
+│   │   ├── qr_decoder.py            # Vision
+│   │   ├── opcua_protocol.py        # OPC UA client
+│   │   ├── modbus_protocol.py       # Modbus TCP client
+│   │   ├── ethernetip_protocol.py   # EtherNet/IP client (Allen-Bradley)
+│   │   ├── profinet_protocol.py     # PROFINET/S7 client (Siemens)
+│   │   ├── modbus_rtu_protocol.py   # Modbus RTU client (Serial)
+│   │   └── ldo_generator.py         # Output
 │   └── setup.py
 ├── ml-training/            # ML Training Backend (SEPARATE - runs monthly)
 │   ├── train.py            # PyTorch training pipeline

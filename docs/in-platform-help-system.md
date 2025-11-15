@@ -339,6 +339,121 @@ export const helpContent = {
       'See full deployment guide for step-by-step instructions'
     ],
     docsUrl: '/docs/deployment-guide-for-manufacturers'
+  },
+
+  // ========================================
+  // INDUSTRIAL PROTOCOLS (ENGINEERS)
+  // ========================================
+  'engineer-protocol-selection': {
+    title: 'Which Protocol Should I Use?',
+    role: 'engineer',
+    content: 'Choose the protocol based on your PLC brand. Context Edge supports 5 major protocols covering 85%+ of industrial PLCs.',
+    steps: [
+      'Check your PLC model number (on the PLC case or in programming software)',
+      'Allen-Bradley/Rockwell → Use EtherNet/IP',
+      'Siemens S7-1200/1500 → Use OPC UA or PROFINET/S7',
+      'Siemens S7-300/400 → Use PROFINET/S7',
+      'Schneider Electric → Use Modbus TCP or OPC UA (M580)',
+      'Legacy PLC (pre-2000) → Use Modbus RTU (serial)',
+      'Unknown brand → Try OPC UA (most universal)'
+    ],
+    videoUrl: 'https://youtube.com/embed/protocol-selection-guide',
+    docsUrl: '/docs/industrial-protocol-setup'
+  },
+
+  'engineer-ethernetip-config': {
+    title: 'How to Configure EtherNet/IP',
+    role: 'engineer',
+    content: 'EtherNet/IP is used for Allen-Bradley and Rockwell Automation PLCs (ControlLogix, CompactLogix).',
+    steps: [
+      'Find PLC IP address in Studio 5000 (Controller Properties → General)',
+      'Identify PLC tag names in Studio 5000 (Controller Tags tab)',
+      'Copy tag names exactly (case-sensitive!): Motor1_Temp, Conveyor_Speed, etc.',
+      'Enter PLC IP and port (default 44818) in Context Edge UI',
+      'Map sensor names to PLC tag names',
+      'Click "Test Connection" to verify communication'
+    ],
+    docsUrl: '/docs/industrial-protocol-setup#ethernetip'
+  },
+
+  'engineer-opcua-config': {
+    title: 'How to Configure OPC UA',
+    role: 'engineer',
+    content: 'OPC UA is a universal protocol supported by Siemens, ABB, B&R, Allen-Bradley, and many others.',
+    steps: [
+      'Find OPC UA server URL (usually opc.tcp://[PLC_IP]:4840)',
+      'Download UaExpert tool (free OPC UA browser)',
+      'Connect UaExpert to PLC and browse available nodes',
+      'Copy node IDs (e.g., ns=2;i=1001 or ns=2;s=Temperature)',
+      'Enter server URL and node mappings in Context Edge',
+      'Test connection'
+    ],
+    videoUrl: 'https://youtube.com/embed/opcua-configuration',
+    docsUrl: '/docs/industrial-protocol-setup#opcua'
+  },
+
+  'engineer-profinet-config': {
+    title: 'How to Configure PROFINET/S7',
+    role: 'engineer',
+    content: 'PROFINET/S7 protocol is used for Siemens S7-300/400/1200/1500 PLCs.',
+    steps: [
+      'Find PLC IP address in TIA Portal (Device Configuration → Properties)',
+      'Note rack and slot numbers (usually Rack=0, Slot=1 for S7-1200/1500)',
+      'Identify Data Blocks (DB) in TIA Portal PLC Tags',
+      'Note DB number, byte offset, and data type (REAL, INT, DINT, BOOL)',
+      'Enter IP, rack, slot, and DB mappings in Context Edge',
+      'Ensure PUT/GET is enabled in PLC security settings',
+      'Ensure DB blocks are non-optimized (required for S7 protocol)'
+    ],
+    videoUrl: 'https://youtube.com/embed/profinet-s7-setup',
+    docsUrl: '/docs/industrial-protocol-setup#profinet'
+  },
+
+  'engineer-modbus-tcp-config': {
+    title: 'How to Configure Modbus TCP',
+    role: 'engineer',
+    content: 'Modbus TCP is used for Schneider Electric, Emerson, and many legacy PLCs.',
+    steps: [
+      'Find PLC IP address (check PLC web interface or programming software)',
+      'Identify register addresses from PLC documentation',
+      'Determine register type: Holding (read/write) or Input (read-only)',
+      'Note scaling factors (register value ÷ scale = actual value)',
+      'Enter IP, port (default 502), and register mappings in Context Edge',
+      'Test connection'
+    ],
+    docsUrl: '/docs/industrial-protocol-setup#modbus'
+  },
+
+  'engineer-modbus-rtu-config': {
+    title: 'How to Configure Modbus RTU (Serial)',
+    role: 'engineer',
+    content: 'Modbus RTU is used for legacy PLCs and devices with RS-232/RS-485 serial communication.',
+    steps: [
+      'Connect serial cable: RS-232 (3-wire) or RS-485 (2-wire + ground)',
+      'Find serial port: Linux (/dev/ttyUSB0) or Windows (COM3)',
+      'Check device manual for: Baudrate (usually 9600), Parity (usually None), Slave ID',
+      'Grant permissions on Linux: sudo usermod -a -G dialout $USER',
+      'Configure register addresses and scaling factors',
+      'Enter port, baudrate, slave ID, and register mappings in Context Edge',
+      'Test connection'
+    ],
+    docsUrl: '/docs/industrial-protocol-setup#modbus-rtu'
+  },
+
+  'engineer-protocol-compatibility': {
+    title: 'PLC Brand Compatibility Matrix',
+    role: 'engineer',
+    content: 'Quick reference for which protocol works with which PLC brand.',
+    steps: [
+      'Allen-Bradley, Rockwell → EtherNet/IP (primary), OPC UA (alternative)',
+      'Siemens S7-1200/1500 → OPC UA (primary), PROFINET/S7 (alternative)',
+      'Siemens S7-300/400 → PROFINET/S7 (primary), OPC UA (alternative)',
+      'Schneider M340 → Modbus TCP',
+      'Schneider M580 → OPC UA (primary), Modbus TCP (alternative)',
+      'ABB, B&R → OPC UA',
+      'Legacy PLCs (pre-2000) → Modbus RTU (serial)'
+    ],
+    docsUrl: '/docs/industrial-protocol-setup#protocol-selection-guide'
   }
 };
 ```

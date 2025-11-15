@@ -212,15 +212,111 @@ export default function Home() {
               <h4 className="font-bold text-gray-900 mb-2">Zero Manual Work</h4>
               <p className="text-sm text-gray-700">QR codes provide physical ground truth automatically.</p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform">
-              <div className="text-4xl mb-3">🔗</div>
-              <h4 className="font-bold text-gray-900 mb-2">OT/IT Bridge</h4>
-              <p className="text-sm text-gray-700">ML-grade data without disrupting existing PLCs.</p>
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform border-2 border-blue-400">
+              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-2">NEW!</div>
+              <div className="text-4xl mb-3">🔌</div>
+              <h4 className="font-bold text-gray-900 mb-2">85%+ PLC Coverage</h4>
+              <p className="text-sm text-gray-700">OPC UA, Modbus, EtherNet/IP, PROFINET, Modbus RTU</p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform">
               <div className="text-4xl mb-3">💰</div>
               <h4 className="font-bold text-gray-900 mb-2">Massive Savings</h4>
               <p className="text-sm text-gray-700">90% less annotation cost, 70% bandwidth reduction.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Industrial Protocol Coverage - NEW! */}
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-block px-4 py-2 bg-blue-600 text-white rounded-full mb-4">
+              <span className="text-sm font-bold">✨ NEW: 85%+ PLC MARKET COVERAGE</span>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Works with Virtually Any Industrial PLC
+            </h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+              Context Edge supports 5 major industrial protocols - from Allen-Bradley to Siemens to legacy serial devices
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            {/* OPC UA */}
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center">
+              <div className="text-3xl mb-2">🔌</div>
+              <h4 className="font-bold text-gray-900 mb-2">OPC UA</h4>
+              <p className="text-sm text-gray-600">Siemens, ABB, B&R</p>
+              <p className="text-xs text-green-600 mt-2">✅ Port 4840</p>
+            </div>
+
+            {/* EtherNet/IP */}
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center border-2 border-blue-400">
+              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-1">NEW!</div>
+              <div className="text-3xl mb-2">⚡</div>
+              <h4 className="font-bold text-gray-900 mb-2">EtherNet/IP</h4>
+              <p className="text-sm text-gray-600">Allen-Bradley</p>
+              <p className="text-xs text-green-600 mt-2">✅ Port 44818</p>
+            </div>
+
+            {/* PROFINET/S7 */}
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center border-2 border-blue-400">
+              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-1">NEW!</div>
+              <div className="text-3xl mb-2">🏭</div>
+              <h4 className="font-bold text-gray-900 mb-2">PROFINET/S7</h4>
+              <p className="text-sm text-gray-600">Siemens S7-300/400/1200/1500</p>
+              <p className="text-xs text-green-600 mt-2">✅ Port 102</p>
+            </div>
+
+            {/* Modbus TCP */}
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center">
+              <div className="text-3xl mb-2">📡</div>
+              <h4 className="font-bold text-gray-900 mb-2">Modbus TCP</h4>
+              <p className="text-sm text-gray-600">Schneider, Emerson</p>
+              <p className="text-xs text-green-600 mt-2">✅ Port 502</p>
+            </div>
+
+            {/* Modbus RTU */}
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center border-2 border-blue-400">
+              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-1">NEW!</div>
+              <div className="text-3xl mb-2">🔌</div>
+              <h4 className="font-bold text-gray-900 mb-2">Modbus RTU</h4>
+              <p className="text-sm text-gray-600">Legacy Serial</p>
+              <p className="text-xs text-green-600 mt-2">✅ RS-232/485</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-xl">
+            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              PLC Brand Compatibility
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">🇺🇸 North America</h4>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>✅ Allen-Bradley (EtherNet/IP)</li>
+                  <li>✅ Rockwell Automation</li>
+                  <li>✅ Emerson (Modbus TCP)</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">🇪🇺 Europe</h4>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>✅ Siemens (OPC UA, PROFINET)</li>
+                  <li>✅ ABB (OPC UA)</li>
+                  <li>✅ B&R (OPC UA)</li>
+                  <li>✅ Schneider (Modbus, OPC UA)</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-2">🏭 Legacy</h4>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>✅ Any pre-2000 PLC (Modbus RTU)</li>
+                  <li>✅ Serial RS-232/RS-485 devices</li>
+                  <li>✅ Brownfield automation</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -356,7 +452,7 @@ export default function Home() {
             <p className="text-lg text-gray-700">Production-ready tools built for manufacturing reliability</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white rounded-lg p-6 shadow-md">
               <div className="flex items-center mb-4">
                 <div className="text-3xl mr-3">🖥️</div>
@@ -405,6 +501,39 @@ export default function Home() {
                   <span className="text-green-500 mr-2">▸</span>
                   <div>
                     <strong>Data Pipeline:</strong> MinIO, Apache Arrow, AWS S3
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md border-2 border-purple-400">
+              <div className="flex items-center mb-4">
+                <div className="text-3xl mr-3">🤖</div>
+                <h3 className="text-xl font-bold text-gray-900">MLOps Pipeline</h3>
+                <div className="ml-2 px-2 py-1 bg-purple-100 rounded text-xs font-bold text-purple-800">NEW!</div>
+              </div>
+              <ul className="text-gray-900 space-y-3">
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">▸</span>
+                  <div>
+                    <strong>Training:</strong> PyTorch → TensorRT conversion
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">▸</span>
+                  <div>
+                    <strong>Deployment:</strong> Manual, Script, or K3s (50-500+ devices)
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">▸</span>
+                  <div>
+                    <strong>Human-in-the-Loop:</strong> Engineer approves deployments
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">▸</span>
+                  <div>
+                    <strong>Containers:</strong> Docker OR Podman (OT-friendly)
                   </div>
                 </li>
               </ul>
@@ -570,6 +699,48 @@ export default function Home() {
                 <p className="text-sm text-gray-600 mt-2">Eliminate manual annotation</p>
               </div>
             </div>
+          </div>
+
+          {/* Deployment Flexibility - NEW! */}
+          <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+              Flexible Deployment for Any Factory Size
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-lg p-6 shadow-md">
+                <div className="text-4xl mb-3 text-center">🖐️</div>
+                <h4 className="font-bold text-gray-900 mb-2 text-center">Manual</h4>
+                <p className="text-sm text-gray-600 text-center mb-3">1-10 devices</p>
+                <ul className="text-sm text-gray-700 space-y-2">
+                  <li>• SSH deployment</li>
+                  <li>• 15 minutes per device</li>
+                  <li>• Perfect for pilots</li>
+                </ul>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-md">
+                <div className="text-4xl mb-3 text-center">📜</div>
+                <h4 className="font-bold text-gray-900 mb-2 text-center">Script</h4>
+                <p className="text-sm text-gray-600 text-center mb-3">10-50 devices</p>
+                <ul className="text-sm text-gray-700 space-y-2">
+                  <li>• Automated bash script</li>
+                  <li>• 30 minutes total</li>
+                  <li>• Rollback support</li>
+                </ul>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-md border-2 border-blue-400">
+                <div className="text-4xl mb-3 text-center">☸️</div>
+                <h4 className="font-bold text-gray-900 mb-2 text-center">K3s</h4>
+                <p className="text-sm text-gray-600 text-center mb-3">50-500+ devices</p>
+                <ul className="text-sm text-gray-700 space-y-2">
+                  <li>• Full automation</li>
+                  <li>• 2 minutes per update</li>
+                  <li>• Enterprise scale</li>
+                </ul>
+              </div>
+            </div>
+            <p className="text-center text-sm text-gray-600 mt-4">
+              Docker OR Podman • Works in air-gapped environments • OT-network friendly
+            </p>
           </div>
         </div>
       </section>

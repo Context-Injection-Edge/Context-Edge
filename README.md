@@ -811,7 +811,7 @@ scp -r context_edge/ nvidia@jetson-001:/opt/
 
 - **🐛 Issues**: [GitHub Issues](https://github.com/Context-Injection-Edge/Context-Edge/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/Context-Injection-Edge/Context-Edge/discussions)
-- **📧 Email**: support@context-edge.com
+- **📧 Email**: support@admoose.pro
 - **🌐 Website**: https://context-edge.com
 
 ---

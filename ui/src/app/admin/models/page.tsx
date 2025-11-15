@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 
 interface AIModel {
   version_id: string;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   accuracy: number;
   created_at: string;
-  status: 'available' | 'deploying' | 'deployed' | 'failed';
-  deployed_devices: string[];
+  status: 'ready_for_review' | 'deploying_pilot' | 'pilot_success' | 'deploying_all' | 'deployed' | 'rolled_back';
+  deployed_devices?: string[];
+  pilot_devices?: string[];
+  training_samples?: number;
+  model_path?: string;
 }
 
 interface EdgeDevice {
@@ -17,87 +20,108 @@ interface EdgeDevice {
   name: string;
   current_model: string;
   status: 'online' | 'offline';
-  last_seen: string;
+  last_seen?: string;
+}
+
+interface PilotMetrics {
+  version_id: string;
+  pilot_devices: number;
+  online_devices: number;
+  total_predictions: number;
+  accuracy: number;
+  false_positive_rate: number;
+  false_negative_rate: number;
+  errors: number;
+  avg_inference_time_ms: number;
+  monitoring_duration_hours: number;
 }
 
 export default function ModelsPage() {
-  const [models, setModels] = useState<AIModel[]>([]);
+  const [pendingModels, setPendingModels] = useState<AIModel[]>([]);
+  const [deployedModels, setDeployedModels] = useState<AIModel[]>([]);
   const [devices, setDevices] = useState<EdgeDevice[]>([]);
+  const [pilotMetrics, setPilotMetrics] = useState<PilotMetrics | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [deploying, setDeploying] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [monitoringVersion, setMonitoringVersion] = useState<string | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
   useEffect(() => {
-    fetchModels();
+    fetchPendingModels();
+    fetchDeployedModels();
     fetchDevices();
   }, []);
 
-  const fetchModels = async () => {
+  // Poll pilot metrics every minute if monitoring
+  useEffect(() => {
+    if (!monitoringVersion) return;
+
+    const interval = setInterval(() => {
+      fetchPilotMetrics(monitoringVersion);
+    }, 60000); // Poll every 60 seconds
+
+    fetchPilotMetrics(monitoringVersion); // Fetch immediately
+
+    return () => clearInterval(interval);
+  }, [monitoringVersion]);
+
+  const fetchPendingModels = async () => {
     setLoading(true);
     try {
-      // Mock data for now - in real implementation, fetch from API
-      const mockModels: AIModel[] = [
-        {
-          version_id: 'v2.1',
-          name: 'Enhanced Belt Slippage Detection',
-          description: 'Improved detection of belt slippage with 15% higher accuracy',
-          accuracy: 0.94,
-          created_at: '2025-01-10T08:00:00Z',
-          status: 'deployed',
-          deployed_devices: ['edge-001', 'edge-002']
-        },
-        {
-          version_id: 'v2.0',
-          name: 'General Motor Health',
-          description: 'Comprehensive motor health monitoring for vibration and temperature',
-          accuracy: 0.89,
-          created_at: '2025-01-05T10:00:00Z',
-          status: 'available',
-          deployed_devices: ['edge-003']
-        },
-        {
-          version_id: 'v1.5',
-          name: 'Basic Vibration Analysis',
-          description: 'Legacy vibration monitoring model',
-          accuracy: 0.82,
-          created_at: '2024-12-20T12:00:00Z',
-          status: 'available',
-          deployed_devices: []
-        }
-      ];
-      setModels(mockModels);
+      const response = await fetch(`${API_BASE}/mlops/models/pending`);
+      const data = await response.json();
+      setPendingModels(data.models || []);
     } catch (error) {
-      console.error('Error fetching models:', error);
+      console.error('Error fetching pending models:', error);
+      // Fallback to mock data for development
+      setPendingModels([
+        {
+          version_id: 'v2.2',
+          accuracy: 0.95,
+          created_at: '2025-01-15T08:00:00Z',
+          status: 'ready_for_review',
+          training_samples: 100000,
+          model_path: 's3://models/model-v2.2.trt'
+        }
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchDeployedModels = async () => {
+    try {
+      // In production, this would be a separate endpoint
+      // For now, use mock data for deployed models
+      const mockDeployed: AIModel[] = [
+        {
+          version_id: 'v2.1',
+          accuracy: 0.94,
+          created_at: '2025-01-10T08:00:00Z',
+          status: 'deployed',
+          deployed_devices: ['edge-001', 'edge-002', 'edge-003', 'edge-004', 'edge-005']
+        },
+        {
+          version_id: 'v2.0',
+          accuracy: 0.89,
+          created_at: '2025-01-05T10:00:00Z',
+          status: 'deployed',
+          deployed_devices: []
+        }
+      ];
+      setDeployedModels(mockDeployed);
+    } catch (error) {
+      console.error('Error fetching deployed models:', error);
+    }
+  };
+
   const fetchDevices = async () => {
     try {
-      // Mock data for edge devices
-      const mockDevices: EdgeDevice[] = [
-        {
-          device_id: 'edge-001',
-          name: 'CIM-Factory-Line1',
-          current_model: 'v2.1',
-          status: 'online',
-          last_seen: '2025-01-15T14:30:00Z'
-        },
-        {
-          device_id: 'edge-002',
-          name: 'CIM-Factory-Line2',
-          current_model: 'v2.1',
-          status: 'online',
-          last_seen: '2025-01-15T14:25:00Z'
-        },
-        {
-          device_id: 'edge-003',
-          name: 'CIM-Packaging',
-          current_model: 'v2.0',
+      const response = await fetch(`${API_BASE}/mlops/devices/status`);
+      const data = await response.json();
+      setDevices(data.devices || []);
           status: 'online',
           last_seen: '2025-01-15T14:20:00Z'
         },

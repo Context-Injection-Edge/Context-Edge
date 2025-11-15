@@ -480,7 +480,7 @@ kubectl describe pod -n context-edge <pod-name>
 For deployment assistance:
 - **Documentation**: [/docs](../docs/)
 - **Issues**: [GitHub Issues](https://github.com/Context-Injection-Edge/Context-Edge/issues)
-- **Email**: support@context-edge.com
+- **Email**: support@admoose.pro
 
 ---
 

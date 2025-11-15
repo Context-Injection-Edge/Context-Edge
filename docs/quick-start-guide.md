@@ -397,7 +397,7 @@ pip install -e .
 
 - **Documentation**: `/docs`
 - **GitHub Issues**: https://github.com/yourusername/context-edge/issues
-- **Email**: support@context-edge.com
+- **Email**: support@admoose.pro
 
 ---
 

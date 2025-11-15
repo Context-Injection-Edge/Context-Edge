@@ -989,4 +989,4 @@ After installation, you should be able to:
 - **Documentation**: `/docs/quick-start-guide.md`
 - **API Reference**: http://localhost:8000/docs
 - **GitHub Issues**: (for bug reports)
-- **Email Support**: support@context-edge.com
+- **Email Support**: support@admoose.pro

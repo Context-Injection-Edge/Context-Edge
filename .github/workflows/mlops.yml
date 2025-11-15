@@ -1,0 +1,74 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'edge-device/**'
+      - 'data-ingestion/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'edge-device/**'
+      - 'data-ingestion/**'
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        cd edge-device
+        pip install -r requirements.txt
+
+    - name: Run model training
+      run: |
+        # Placeholder for model training script
+        # In real implementation, this would train ML models
+        echo "Training model..."
+        # python train_model.py
+
+    - name: Validate model
+      run: |
+        # Placeholder for model validation
+        echo "Validating model..."
+        # python validate_model.py
+
+    - name: Build and push model container
+      run: |
+        # Build container with new model
+        docker build -t context-edge-cim:${{ github.sha }} ./edge-device
+        # In production, push to registry
+        # docker push myregistry/context-edge-cim:${{ github.sha }}
+
+    - name: Update model metadata
+      run: |
+        # Update model metadata in context service
+        # Only run if CONTEXT_SERVICE_URL is configured
+        if [ -n "${{ secrets.CONTEXT_SERVICE_URL }}" ]; then
+          curl -X POST ${{ secrets.CONTEXT_SERVICE_URL }}/context/models \
+            -H "Content-Type: application/json" \
+            -d '{
+              "version_id": "'${{ github.sha }}'",
+              "confidence_threshold": 0.85,
+              "model_type": "anomaly_detection",
+              "last_updated": "'$(date -Iseconds)'"
+            }'
+        else
+          echo "Skipping model metadata update - CONTEXT_SERVICE_URL not configured"
+          echo "Set CONTEXT_SERVICE_URL secret to enable production deployment"
+        fi
+
+    - name: Deploy to edge (Kubernetes)
+      run: |
+        # Update Kubernetes deployment with new model version
+        # kubectl set image deployment/cim-deployment cim-container=context-edge-cim:${{ github.sha }}
+        echo "Deploying model ${{ github.sha }} to edge devices"

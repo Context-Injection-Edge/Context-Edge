@@ -8,8 +8,9 @@ RUN mkdir -p /app/storage/ldos
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
+# Copy main.py directly (skip __init__.py to avoid package issues)
+COPY src/main.py ./main.py
 
 EXPOSE 8001
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]

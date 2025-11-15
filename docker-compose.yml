@@ -38,7 +38,7 @@ services:
       redis:
         condition: service_started
     volumes:
-      - ./context-service:/app
+      - ./context-service:/app:Z
 
   data-ingestion:
     build: ./data-ingestion
@@ -46,8 +46,9 @@ services:
       - "8001:8001"
     environment:
       STORAGE_PATH: /app/storage/ldos
+    command: ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
     volumes:
-      - ./data-ingestion:/app
+      - ./data-ingestion:/app:Z
       - ldo_storage:/app/storage/ldos
 
 volumes:

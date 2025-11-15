@@ -28,51 +28,58 @@ Traditional ML data labeling is:
 
 ### The Context Edge Solution
 
-Our **Context Injection Module (CIM)** performs real-time fusion of:
-1. Physical World Location/Object (QR code)
+Our **Context Injection Module (CIM)** with **Industrial RAG** performs real-time fusion of:
+1. Physical World Location/Object (QR codes, RFID, barcodes)
 2. Rich Metadata Payload (ground truth from database)
-3. Sensor Data Stream (video/images)
-4. Temporal & Spatial Markers (timestamps/coordinates)
+3. Industrial Sensor Data (OPC UA, Modbus, EtherNet/IP protocols)
+4. Operational Context (Asset data, thresholds, runtime state from Redis)
+5. Temporal & Spatial Markers (timestamps/coordinates)
 
-**Result**: 100% labeled data generated instantly at the source.
+**Result**: Context-aware AI with 100% accurate labels, industrial protocol integration, and continuous learning through feedback loops.
 
 ---
 
 ## 🏗️ Architecture
 
-### Three-Tier System
+### Three-Tier System with Industrial RAG
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │         CONTEXT MANAGEMENT LAYER (Cloud/On-Prem)            │
 │  ┌────────────────────┐  ┌─────────────────────────────┐   │
 │  │ Rich Metadata DB   │  │  Context Service API        │   │
-│  │ (PostgreSQL)       │  │  (FastAPI + Redis Cache)    │   │
+│  │ (PostgreSQL)       │  │  (FastAPI + Redis Context   │   │
+│  │ + Asset Master     │  │   Store for Industrial RAG) │   │
 │  └────────────────────┘  └─────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
-                            ▲
-                            │ CID → Metadata Lookup
-                            │
+                             ▲
+                             │ CID → Metadata + Context Lookup
+                             │
 ┌─────────────────────────────────────────────────────────────┐
 │         EDGE PROCESSING LAYER (Factory Floor)               │
 │  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐   │
-│  │ QR Decoder  │→ │ CIM (Patent) │→ │ LDO Generator    │   │
-│  │ (OpenCV)    │  │ Smart Cache  │  │ (JSON + Video)   │   │
+│  │ QR/Protocol │→ │ CIM (Patent) │→ │ LDO Generator    │   │
+│  │ Decoder     │  │ Industrial   │  │ (JSON + Video +  │   │
+│  │ (OPC UA/   │  │ RAG Context  │  │  Context)        │   │
+│  │ Modbus)     │  │ Retrieval    │  │                  │   │
 │  └─────────────┘  └──────────────┘  └──────────────────┘   │
 │         ▲                                     │              │
 │         │                                     ▼              │
 │  ┌─────────────┐                    ┌──────────────────┐   │
-│  │Vision Engine│                    │ Edge AI Device   │   │
-│  │(Camera Feed)│                    │(NVIDIA Jetson)   │   │
+│  │Industrial   │                    │ Edge AI Device   │   │
+│  │Protocols    │                    │(NVIDIA Jetson/   │   │
+│  │(OPC UA,     │                    │ Kubernetes)      │   │
+│  │Modbus, etc.)│                    │                  │   │
 │  └─────────────┘                    └──────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
-                                       │
-                                       ▼ Upload LDOs
+                                        │
+                                        ▼ Upload LDOs + Feedback
 ┌─────────────────────────────────────────────────────────────┐
 │         DATA INGESTION LAYER (Cloud/Data Lake)              │
 │  ┌────────────────────┐  ┌─────────────────────────────┐   │
 │  │ LDO Storage        │  │  ML Training Pipeline       │   │
-│  │ (S3/MinIO)         │  │  (PyTorch/TensorFlow)       │   │
+│  │ (S3/MinIO)         │  │  (MLOps CI/CD + Feedback    │   │
+│  │ + Feedback Queue   │  │   Loop for Retraining)     │   │
 │  └────────────────────┘  └─────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -182,10 +189,11 @@ print(ldo)
 - `POST /context/bulk-import` - CSV import
 
 ### 2. Edge Device SDK
-- **QR Decoder** (OpenCV)
-- **Context Injection Module** (CIM) - Patent core
+- **Multi-Protocol Support** (QR, OPC UA, Modbus, EtherNet/IP)
+- **Context Injection Module** (CIM) - Patent core with Industrial RAG
+- **Context Retrieval** (Asset data, thresholds, runtime state from Redis)
 - **Vision Engine** (camera/video)
-- **LDO Generator** (JSON + video output)
+- **LDO Generator** (JSON + video + industrial context)
 
 **Install**: `pip install context-edge-sdk`
 
@@ -211,10 +219,12 @@ print(ldo)
 | Layer | Technology |
 |-------|-----------|
 | **Backend** | Python 3.11, FastAPI, SQLAlchemy |
-| **Database** | PostgreSQL 15, Redis 7 |
+| **Database** | PostgreSQL 15, Redis 7 (Context Store) |
 | **Frontend** | Next.js 14, React 19, Tailwind CSS 4 |
 | **Edge** | Python 3.9+, OpenCV, PyTorch/TensorRT |
-| **Identifiers** | QR Codes (MVP), Barcodes/RFID/OCR (Roadmap) |
+| **Industrial Protocols** | OPC UA, Modbus, EtherNet/IP |
+| **Identifiers** | QR Codes, Barcodes/RFID/OCR (Pluggable) |
+| **MLOps** | GitHub Actions, Kubernetes, Feedback Loop |
 | **Deployment** | Docker, Kubernetes, NVIDIA Jetson |
 | **Storage** | MinIO, AWS S3, Azure Blob |
 

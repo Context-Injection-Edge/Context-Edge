@@ -3,13 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from ..database.database import get_db
 from ..models.metadata import MetadataPayload
-from ..models.schemas import MetadataPayloadCreate, MetadataPayloadUpdate, MetadataPayload as MetadataPayloadSchema
+from ..models.schemas import (
+    MetadataPayloadCreate, MetadataPayloadUpdate, MetadataPayload as MetadataPayloadSchema,
+    AssetMasterData, OperatingThreshold, RuntimeState, AIModelMetadata
+)
 import redis
 import os
 import json
 import csv
 import io
-from typing import List
+import time
+from typing import List, Dict, Any
+from datetime import datetime
 
 app = FastAPI(title="Context Edge Service", version="1.0.0", description="Real-Time Ground-Truth Labeling System")
 
@@ -137,6 +142,114 @@ async def bulk_import_csv(file: UploadFile = File(...), db: Session = Depends(ge
         "errors": errors if errors else None,
         "message": f"Successfully imported {imported} metadata payloads"
     }
+
+# Context Store APIs for Industrial RAG
+
+@app.post("/context/assets")
+def create_asset(asset: AssetMasterData):
+    """Store asset master data in Redis Context Store"""
+    key = f"asset:{asset.asset_id}"
+    data = asset.model_dump()
+    redis_client.set(key, json.dumps(data))
+    return {"message": f"Asset {asset.asset_id} stored"}
+
+@app.get("/context/assets/{asset_id}")
+def get_asset(asset_id: str):
+    """Retrieve asset master data"""
+    key = f"asset:{asset_id}"
+    data = redis_client.get(key)
+    if not data:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    return json.loads(data)
+
+@app.post("/context/thresholds")
+def create_threshold(threshold: OperatingThreshold):
+    """Store operating thresholds"""
+    key = f"thresholds:{threshold.sensor_type}"
+    data = threshold.model_dump()
+    redis_client.set(key, json.dumps(data))
+    return {"message": f"Threshold for {threshold.sensor_type} stored"}
+
+@app.get("/context/thresholds/{sensor_type}")
+def get_threshold(sensor_type: str):
+    """Retrieve operating thresholds"""
+    key = f"thresholds:{sensor_type}"
+    data = redis_client.get(key)
+    if not data:
+        raise HTTPException(status_code=404, detail="Threshold not found")
+    return json.loads(data)
+
+@app.post("/context/runtime")
+def update_runtime_state(state: RuntimeState):
+    """Update runtime state"""
+    key = f"runtime:{state.production_order_id}"
+    data = state.model_dump()
+    redis_client.set(key, json.dumps(data))
+    return {"message": f"Runtime state for order {state.production_order_id} updated"}
+
+@app.get("/context/runtime/{order_id}")
+def get_runtime_state(order_id: str):
+    """Retrieve runtime state"""
+    key = f"runtime:{order_id}"
+    data = redis_client.get(key)
+    if not data:
+        raise HTTPException(status_code=404, detail="Runtime state not found")
+    return json.loads(data)
+
+@app.post("/context/models")
+def update_model_metadata(metadata: AIModelMetadata):
+    """Store AI model metadata"""
+    key = f"model:{metadata.version_id}"
+    data = metadata.model_dump()
+    redis_client.set(key, json.dumps(data))
+    return {"message": f"Model metadata for {metadata.version_id} stored"}
+
+@app.get("/context/models/{version_id}")
+def get_model_metadata(version_id: str):
+    """Retrieve AI model metadata"""
+    key = f"model:{version_id}"
+    data = redis_client.get(key)
+    if not data:
+        raise HTTPException(status_code=404, detail="Model metadata not found")
+    return json.loads(data)
+
+# Feedback Loop for MLOps
+@app.post("/feedback/low-confidence")
+def submit_low_confidence_feedback(sensor_data: Dict[str, Any], prediction: Dict[str, Any], cid: str):
+    """Collect low-confidence predictions for retraining"""
+    feedback_data = {
+        "sensor_data": sensor_data,
+        "prediction": prediction,
+        "cid": cid,
+        "timestamp": time.time(),
+        "needs_retraining": True
+    }
+
+    # Store in Redis for batch processing
+    key = f"feedback:{int(time.time())}"
+    redis_client.setex(key, 86400 * 7, json.dumps(feedback_data))  # 7 days TTL
+
+    return {"message": "Feedback collected for retraining"}
+
+@app.get("/feedback/batch")
+def get_feedback_batch(limit: int = 100):
+    """Retrieve batch of feedback data for retraining"""
+    # Use SCAN instead of KEYS for production safety
+    feedback_keys = []
+    cursor = 0
+    while True:
+        cursor, keys = redis_client.scan(cursor, match="feedback:*", count=limit)
+        feedback_keys.extend(keys)
+        if cursor == 0 or len(feedback_keys) >= limit:
+            break
+
+    feedback_data = []
+    for key in feedback_keys[:limit]:
+        data = redis_client.get(key)
+        if data:
+            feedback_data.append(json.loads(data))
+
+    return {"feedback": feedback_data, "count": len(feedback_data)}
 
 @app.get("/health")
 def health_check():

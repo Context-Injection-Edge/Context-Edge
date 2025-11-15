@@ -1,6 +1,8 @@
 # Context Edge - Quick Start Guide
 
-Welcome to Context Edge! This guide will help you get started with the Real-Time Ground-Truth Labeling System for Manufacturing in under 30 minutes.
+Welcome to Context Edge! This guide will help you get started with the **Industrial AI Platform** in under 30 minutes.
+
+Context Edge provides real-time monitoring, predictive maintenance, and automated quality control for manufacturing. The platform serves operators (live dashboards), engineers (MER smart work orders), and data scientists (perfect ML training data).
 
 ## Table of Contents
 

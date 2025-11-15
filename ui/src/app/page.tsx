@@ -437,7 +437,7 @@ export default function Home() {
                 This diagram shows our patented <strong>Context Injection Module (CIM)</strong> - highlighted in gold - which synchronously fuses physical context identifiers with sensor data at the edge. The resulting Labeled Data Objects serve operators (blue), engineers (green), and data scientists (purple).
               </p>
               <div className="bg-white p-6 rounded-lg border border-gray-300">
-                <div ref={diagramRef} className="mermaid"></div>
+                <div ref={diagramRef} className="mermaid" suppressHydrationWarning></div>
               </div>
             </div>
           </details>

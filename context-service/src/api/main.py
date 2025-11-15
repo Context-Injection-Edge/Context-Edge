@@ -251,6 +251,212 @@ def get_feedback_batch(limit: int = 100):
 
     return {"feedback": feedback_data, "count": len(feedback_data)}
 
+# ============================================================================
+# MLOps Workflow - Human in the Loop Deployment
+# ============================================================================
+
+@app.post("/mlops/models/register")
+def register_trained_model(
+    version_id: str,
+    accuracy: float,
+    model_path: str,
+    training_samples: int,
+    training_date: str
+):
+    """
+    Register a newly trained model (called by training container)
+
+    This is called AFTER training completes:
+    - Training container finishes training
+    - Uploads model-v2.1.trt to S3/MinIO
+    - Calls this API to register the model
+    - Engineer then reviews in UI
+    """
+    model_data = {
+        "version_id": version_id,
+        "accuracy": accuracy,
+        "model_path": model_path,  # s3://models/model-v2.1.trt
+        "training_samples": training_samples,
+        "training_date": training_date,
+        "status": "ready_for_review",  # ready_for_review → pilot → deployed
+        "created_at": datetime.utcnow().isoformat(),
+        "deployed_devices": [],
+        "pilot_devices": []
+    }
+
+    # Store in Redis
+    redis_client.set(f"model:{version_id}", json.dumps(model_data))
+
+    # Also store in "pending models" list
+    redis_client.sadd("models:pending_review", version_id)
+
+    return {
+        "message": f"Model {version_id} registered successfully",
+        "status": "ready_for_review",
+        "next_step": "Engineer reviews in MLOps Dashboard"
+    }
+
+
+@app.get("/mlops/models/pending")
+def get_pending_models():
+    """Get models waiting for engineer review"""
+    pending_versions = redis_client.smembers("models:pending_review")
+    models = []
+
+    for version_id in pending_versions:
+        data = redis_client.get(f"model:{version_id}")
+        if data:
+            models.append(json.loads(data))
+
+    return {"models": models, "count": len(models)}
+
+
+@app.post("/mlops/models/{version_id}/deploy-pilot")
+def deploy_to_pilot(version_id: str, pilot_device_ids: List[str]):
+    """
+    Deploy model to pilot devices (5 devices for testing)
+
+    Engineer clicks "Deploy to Pilot" in UI → calls this endpoint
+
+    This will:
+    1. Update model status to "deploying_pilot"
+    2. Trigger K3s DaemonSet with node selector for pilot devices
+    3. Return deployment job ID for monitoring
+    """
+    # Get model metadata
+    model_data_str = redis_client.get(f"model:{version_id}")
+    if not model_data_str:
+        raise HTTPException(status_code=404, detail="Model not found")
+
+    model_data = json.loads(model_data_str)
+
+    # Update status
+    model_data["status"] = "deploying_pilot"
+    model_data["pilot_devices"] = pilot_device_ids
+    model_data["pilot_started_at"] = datetime.utcnow().isoformat()
+
+    redis_client.set(f"model:{version_id}", json.dumps(model_data))
+
+    # TODO: Trigger K3s deployment
+    # kubectl apply -f k8s/model-deployment-{version_id}-pilot.yaml
+    # For now, simulate deployment
+
+    return {
+        "message": f"Deploying {version_id} to {len(pilot_device_ids)} pilot devices",
+        "pilot_devices": pilot_device_ids,
+        "status": "deploying_pilot",
+        "next_step": "Monitor pilot for 24-48 hours, then deploy to all or rollback"
+    }
+
+
+@app.post("/mlops/models/{version_id}/deploy-all")
+def deploy_to_all_devices(version_id: str):
+    """
+    Deploy model to ALL edge devices (after pilot succeeds)
+
+    Engineer monitors pilot for 24-48 hours
+    If metrics look good → clicks "Deploy to All"
+    """
+    model_data_str = redis_client.get(f"model:{version_id}")
+    if not model_data_str:
+        raise HTTPException(status_code=404, detail="Model not found")
+
+    model_data = json.loads(model_data_str)
+
+    # Check if pilot was successful
+    if model_data.get("status") != "deploying_pilot" and model_data.get("status") != "pilot_success":
+        raise HTTPException(
+            status_code=400,
+            detail="Model must complete pilot deployment before deploying to all devices"
+        )
+
+    # Update status
+    model_data["status"] = "deploying_all"
+    model_data["full_deployment_started_at"] = datetime.utcnow().isoformat()
+
+    redis_client.set(f"model:{version_id}", json.dumps(model_data))
+
+    # Remove from pending review
+    redis_client.srem("models:pending_review", version_id)
+
+    # TODO: Trigger K3s DaemonSet for ALL devices
+    # kubectl apply -f k8s/model-deployment-{version_id}-all.yaml
+
+    return {
+        "message": f"Deploying {version_id} to all edge devices",
+        "status": "deploying_all",
+        "next_step": "Monitor deployment progress"
+    }
+
+
+@app.post("/mlops/models/{version_id}/rollback")
+def rollback_model(version_id: str, rollback_to_version: str):
+    """
+    Rollback to previous model version (if deployment fails)
+
+    If pilot shows issues → Engineer clicks "Rollback"
+    """
+    model_data_str = redis_client.get(f"model:{version_id}")
+    if not model_data_str:
+        raise HTTPException(status_code=404, detail="Model not found")
+
+    model_data = json.loads(model_data_str)
+
+    # Update status
+    model_data["status"] = "rolled_back"
+    model_data["rollback_reason"] = "Engineer initiated rollback"
+    model_data["rollback_at"] = datetime.utcnow().isoformat()
+
+    redis_client.set(f"model:{version_id}", json.dumps(model_data))
+
+    # TODO: Trigger K3s rollback
+    # kubectl apply -f k8s/model-deployment-{rollback_to_version}-all.yaml
+
+    return {
+        "message": f"Rolling back from {version_id} to {rollback_to_version}",
+        "status": "rolled_back"
+    }
+
+
+@app.get("/mlops/devices/status")
+def get_device_status():
+    """Get status of all edge devices (for pilot selection)"""
+    # TODO: Query K3s for node status
+    # For now, return mock data
+
+    mock_devices = [
+        {"device_id": "edge-001", "name": "CIM-Line1", "status": "online", "current_model": "v2.0"},
+        {"device_id": "edge-002", "name": "CIM-Line2", "status": "online", "current_model": "v2.0"},
+        {"device_id": "edge-003", "name": "CIM-Line3", "status": "online", "current_model": "v2.0"},
+        {"device_id": "edge-004", "name": "CIM-Line4", "status": "offline", "current_model": "v2.0"},
+        {"device_id": "edge-005", "name": "CIM-Line5", "status": "online", "current_model": "v2.0"},
+    ]
+
+    return {"devices": mock_devices, "count": len(mock_devices)}
+
+
+@app.get("/mlops/deployment/{version_id}/metrics")
+def get_deployment_metrics(version_id: str):
+    """Get pilot deployment metrics (accuracy, errors, predictions)"""
+    # TODO: Query metrics from edge devices
+    # For now, return mock metrics
+
+    mock_metrics = {
+        "version_id": version_id,
+        "pilot_devices": 5,
+        "online_devices": 5,
+        "total_predictions": 12543,
+        "accuracy": 0.952,  # Validated accuracy
+        "false_positive_rate": 0.021,
+        "false_negative_rate": 0.027,
+        "errors": 0,
+        "avg_inference_time_ms": 87,
+        "monitoring_duration_hours": 36
+    }
+
+    return mock_metrics
+
+
 @app.get("/health")
 def health_check():
     """Health check endpoint"""

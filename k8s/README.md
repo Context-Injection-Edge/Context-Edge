@@ -1,172 +1,97 @@
-# Kubernetes Deployment for Context Edge
+# Kubernetes Manifests
+**For K3s and Full Kubernetes**
 
-This directory contains Kubernetes manifests for deploying Context Edge in production.
+---
 
-## Prerequisites
+## 🎯 **What's in This Folder?**
 
-- Kubernetes cluster (v1.24+)
-- kubectl configured
-- Docker images built and pushed to registry
+Kubernetes manifests for automated model deployment to edge devices.
 
-## Quick Deploy
+**These manifests work with:**
+- ✅ **K3s** (recommended for edge/industrial)
+- ✅ **K8s** (full Kubernetes)
+- ✅ **K0s, MicroK8s, etc.** (any Kubernetes distribution)
 
-```bash
-# Create namespace
-kubectl apply -f namespace.yaml
+---
 
-# Deploy database and cache
-kubectl apply -f postgres-statefulset.yaml
-kubectl apply -f redis-deployment.yaml
+## 📁 **Files**
 
-# Wait for database to be ready
-kubectl wait --for=condition=ready pod -l app=postgres -n context-edge --timeout=120s
+| File | Purpose | When to Use |
+|------|---------|-------------|
+| `model-updater-daemonset.yaml` | Deploy to ALL edge devices | Production (50-500+ devices) |
+| `model-updater-pilot.yaml` | Deploy to PILOT devices only | Testing new models (5 devices) |
 
-# Deploy services
-kubectl apply -f context-service-deployment.yaml
-kubectl apply -f data-ingestion-deployment.yaml
+---
 
-# Verify deployment
-kubectl get all -n context-edge
-```
+## 🚀 **Quick Start**
 
-## Build and Push Docker Images
+### **For K3s Users (Recommended)**
 
 ```bash
-# Context Service
-cd context-service
-docker build -t your-registry/context-edge/context-service:latest .
-docker push your-registry/context-edge/context-service:latest
+# 1. Install K3s on factory server (one-time setup)
+curl -sfL https://get.k3s.io | sh -
 
-# Data Ingestion
-cd ../data-ingestion
-docker build -t your-registry/context-edge/data-ingestion:latest .
-docker push your-registry/context-edge/data-ingestion:latest
-```
+# 2. Create namespace
+kubectl create namespace context-edge
 
-Update image references in deployment YAMLs.
+# 3. Deploy to pilot devices
+kubectl apply -f model-updater-pilot.yaml
 
-## Configuration
-
-### Database Credentials
-
-Update `postgres-secret` in `postgres-statefulset.yaml`:
-
-```yaml
-stringData:
-  POSTGRES_PASSWORD: your-secure-password
-```
-
-### Resource Limits
-
-Adjust CPU/memory limits in deployment YAMLs based on your workload:
-
-```yaml
-resources:
-  requests:
-    memory: "256Mi"
-    cpu: "250m"
-  limits:
-    memory: "512Mi"
-    cpu: "500m"
-```
-
-### Storage
-
-Adjust storage sizes in PVC specs:
-
-- PostgreSQL: Default 10Gi
-- Redis: Default 5Gi
-- LDO Storage: Default 100Gi
-
-## Access Services
-
-### Get External IPs
-
-```bash
-kubectl get svc -n context-edge
-```
-
-### Port Forward (for testing)
-
-```bash
-# Context Service
-kubectl port-forward svc/context-service 8000:8000 -n context-edge
-
-# Data Ingestion
-kubectl port-forward svc/data-ingestion 8001:8001 -n context-edge
-```
-
-## Scaling
-
-```bash
-# Scale Context Service
-kubectl scale deployment context-service --replicas=5 -n context-edge
-
-# Scale Data Ingestion
-kubectl scale deployment data-ingestion --replicas=3 -n context-edge
-```
-
-## Monitoring
-
-```bash
-# Check pod status
+# 4. Monitor pilot
 kubectl get pods -n context-edge
 
-# View logs
-kubectl logs -f deployment/context-service -n context-edge
-kubectl logs -f deployment/data-ingestion -n context-edge
-
-# Describe resources
-kubectl describe deployment context-service -n context-edge
+# 5. If successful, deploy to all
+kubectl apply -f model-updater-daemonset.yaml
 ```
 
-## Cleanup
+### **For Full K8s Users**
 
 ```bash
-kubectl delete namespace context-edge
+# Same commands work!
+kubectl create namespace context-edge
+kubectl apply -f model-updater-daemonset.yaml
 ```
 
-## Production Considerations
+---
 
-1. **TLS/SSL**: Add Ingress with cert-manager for HTTPS
-2. **Authentication**: Implement OAuth2/JWT for API access
-3. **Monitoring**: Deploy Prometheus + Grafana
-4. **Logging**: Set up ELK/Loki stack
-5. **Backups**: Configure regular PostgreSQL backups
-6. **High Availability**: Use multi-zone deployments
-7. **Secrets Management**: Use external secrets (Vault, AWS Secrets Manager)
+## 🔧 **Why K3s?**
 
-## Ingress Example
+If you're unsure whether to use K3s or full K8s, here's our recommendation:
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: context-edge-ingress
-  namespace: context-edge
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-spec:
-  tls:
-    - hosts:
-        - api.context-edge.com
-      secretName: context-edge-tls
-  rules:
-    - host: api.context-edge.com
-      http:
-        paths:
-          - path: /context
-            pathType: Prefix
-            backend:
-              service:
-                name: context-service
-                port:
-                  number: 8000
-          - path: /ingest
-            pathType: Prefix
-            backend:
-              service:
-                name: data-ingestion
-                port:
-                  number: 8001
-```
+| Use K3s When... | Use Full K8s When... |
+|----------------|---------------------|
+| Factory/edge deployment | Cloud deployment |
+| 50-500 devices | 1000+ devices |
+| Resource-constrained servers | Dedicated K8s clusters |
+| OT (Operational Technology) | IT infrastructure |
+| Want lightweight, simple | Already have K8s expertise |
+
+**For most manufacturers: Use K3s!**
+
+---
+
+## 📖 **Documentation**
+
+- **Deployment Guide**: [docs/deployment-guide-for-manufacturers.md](../docs/deployment-guide-for-manufacturers.md)
+- **MLOps Workflow**: [docs/mlops-workflow-guide.md](../docs/mlops-workflow-guide.md)
+- **K3s Official Docs**: https://k3s.io/
+
+---
+
+## ❓ **FAQ**
+
+### **Q: Why is the folder named `k8s/` if we recommend K3s?**
+**A:** K3s uses the exact same manifest format as Kubernetes. The `k8s/` naming is the industry standard for Kubernetes manifests, regardless of which distribution you use.
+
+### **Q: Will these work with my K3s cluster?**
+**A:** Yes! These manifests are tested and work perfectly with K3s.
+
+### **Q: Can I use these without K3s?**
+**A:** Yes, but for 1-50 devices, we recommend simpler deployment methods (see [deployment guide](../docs/deployment-guide-for-manufacturers.md)).
+
+### **Q: What if I want to use full K8s instead of K3s?**
+**A:** No problem! These manifests work identically on K8s and K3s.
+
+---
+
+**Built for manufacturing excellence** 🏭

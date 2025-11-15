@@ -825,8 +825,8 @@ scp -r context_edge/ nvidia@jetson-001:/opt/
 **Key Innovation**: Context Injection Module (CIM) with Industrial RAG performs real-time fusion of physical identifiers (QR codes), rich metadata, and sensor data at the network edge, enabling 100% accurate ML training data and intelligent manufacturing systems.
 
 For licensing and partnership inquiries:
-- **Email**: licensing@context-edge.com
-- **Sales**: sales@context-edge.com
+- **Email**: licensing@admoose.pro
+- **Sales**: sales@admoose.pro
 
 ---
 
@@ -858,7 +858,7 @@ cd Context-Edge && ./start.sh && cd ui && npm install && npm run dev
 📖 [Deployment Progression Guide](docs/deployment-progression-guide.md)
 
 ### **Option 3: Request Enterprise Demo**
-📧 [demo@context-edge.com](mailto:demo@context-edge.com)
+📧 [demo@admoose.pro](mailto:demo@admoose.pro)
 
 ---
 

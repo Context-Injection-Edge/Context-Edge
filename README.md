@@ -74,9 +74,9 @@ Data scientist labels data           100% accurate        Alerts engineer
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
 │  │  Operators   │  │  Engineers   │  │ Data Scientists  │  │
 │  │              │  │              │  │                  │  │
-│  │ • Live View  │  │ • MER Queue  │  │ • Model Deploy  │  │
-│  │ • Alerts     │  │ • Thresholds │  │ • Feedback Loop │  │
-│  │ • Metrics    │  │ • Assets     │  │ • MLOps         │  │
+│  │ • Live View  │  │ • MER Queue  │  │ • Model Deploy   │  │
+│  │ • Alerts     │  │ • Thresholds │  │ • Feedback Loop  │  │
+│  │ • Metrics    │  │ • Assets     │  │ • MLOps          │  │
 │  └──────────────┘  └──────────────┘  └──────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                              ↕ REST API

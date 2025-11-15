@@ -316,7 +316,7 @@ export default function FeedbackPage() {
               <div className="text-3xl font-bold text-red-600 mb-2">
                 {feedbackItems.filter(item => item.prediction.confidence < 0.6).length}
               </div>
-              <div className="text-gray-600">High Priority (<60%)</div>
+              <div className="text-gray-600">High Priority (&lt;60%)</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-yellow-600 mb-2">
@@ -328,7 +328,7 @@ export default function FeedbackPage() {
               <div className="text-3xl font-bold text-green-600 mb-2">
                 {feedbackItems.filter(item => item.prediction.confidence >= 0.8).length}
               </div>
-              <div className="text-gray-600">Low Priority (≥80%)</div>
+              <div className="text-gray-600">Low Priority (&ge;80%)</div>
             </div>
           </div>
         </div>

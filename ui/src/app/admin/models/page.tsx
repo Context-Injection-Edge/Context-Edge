@@ -122,6 +122,28 @@ export default function ModelsPage() {
       const response = await fetch(`${API_BASE}/mlops/devices/status`);
       const data = await response.json();
       setDevices(data.devices || []);
+    } catch (error) {
+      console.error('Error fetching devices:', error);
+      // Use mock devices as fallback
+      const mockDevices = [
+        {
+          device_id: 'edge-001',
+          name: 'CIM-Line1-Station1',
+          current_model: 'v1.5',
+          status: 'online',
+          last_seen: '2025-01-15T14:30:00Z'
+        },
+        {
+          device_id: 'edge-002',
+          name: 'CIM-Line1-Station2',
+          current_model: 'v1.5',
+          status: 'online',
+          last_seen: '2025-01-15T14:25:00Z'
+        },
+        {
+          device_id: 'edge-003',
+          name: 'CIM-Line2-Station1',
+          current_model: 'v1.4',
           status: 'online',
           last_seen: '2025-01-15T14:20:00Z'
         },
@@ -134,8 +156,6 @@ export default function ModelsPage() {
         }
       ];
       setDevices(mockDevices);
-    } catch (error) {
-      console.error('Error fetching devices:', error);
     }
   };
 

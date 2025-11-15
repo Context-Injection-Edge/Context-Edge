@@ -1,0 +1,446 @@
+# In-Platform Help System
+**Contextual Help for Operators, Engineers, and ML Scientists**
+
+---
+
+## 🎯 **Goal**
+
+Make Context Edge **self-documenting** with:
+- ✅ Help icons (?) next to every section
+- ✅ Pop-up modals with step-by-step guides
+- ✅ Contextual tooltips on hover
+- ✅ **Role-specific help** (Operator vs Engineer vs ML Scientist)
+- ✅ Video tutorials embedded
+- ✅ Links to full documentation
+
+---
+
+## 📋 **User Roles and Their Needs**
+
+### **1. Operators 👷 (Factory Floor)**
+**What they need:**
+- Simple, visual instructions ("Click the green button")
+- Screenshots/videos
+- No technical jargon
+- Quick reference guides
+
+**Example Help Topics:**
+- "How do I scan a QR code?"
+- "What does this alert mean?"
+- "How do I acknowledge an MER?"
+
+---
+
+### **2. Engineers 👨‍🔧 (Maintenance/Process)**
+**What they need:**
+- Technical details about thresholds
+- Root cause analysis
+- How to adjust settings
+- Troubleshooting guides
+
+**Example Help Topics:**
+- "How do I set vibration thresholds?"
+- "What sensors are mapped to this asset?"
+- "How do I validate an MER?"
+
+---
+
+### **3. ML Scientists 👨‍💻 (Data Scientists)**
+**What they need:**
+- Model training details
+- Deployment workflows
+- API documentation
+- Performance metrics
+
+**Example Help Topics:**
+- "How does model training work?"
+- "How do I deploy a model to edge devices?"
+- "What is the feedback loop?"
+
+---
+
+## 🛠️ **Implementation Plan**
+
+### **Step 1: Create Help Component**
+
+Create `ui/src/components/HelpPopup.tsx`:
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+
+interface HelpContent {
+  title: string;
+  role: 'operator' | 'engineer' | 'ml-scientist' | 'all';
+  content: string;
+  steps?: string[];
+  videoUrl?: string;
+  docsUrl?: string;
+}
+
+interface HelpPopupProps {
+  helpKey: string;
+  helpContent: HelpContent;
+}
+
+export default function HelpPopup({ helpKey, helpContent }: HelpPopupProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      {/* Help Icon Button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="inline-flex items-center justify-center w-5 h-5 text-blue-600 hover:text-blue-800 rounded-full border border-blue-600 hover:border-blue-800"
+        title="Click for help"
+      >
+        ?
+      </button>
+
+      {/* Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {helpContent.title}
+              </h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="px-6 py-4">
+              <p className="text-gray-700 mb-4">{helpContent.content}</p>
+
+              {/* Step-by-step instructions */}
+              {helpContent.steps && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">Steps:</h4>
+                  <ol className="list-decimal list-inside space-y-2">
+                    {helpContent.steps.map((step, index) => (
+                      <li key={index} className="text-gray-700">{step}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {/* Video tutorial */}
+              {helpContent.videoUrl && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">Video Tutorial:</h4>
+                  <iframe
+                    width="100%"
+                    height="315"
+                    src={helpContent.videoUrl}
+                    title="Tutorial video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
+
+              {/* Link to full docs */}
+              {helpContent.docsUrl && (
+                <div className="mt-4">
+                  <a
+                    href={helpContent.docsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 underline"
+                  >
+                    📖 Read Full Documentation →
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Got it, thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+---
+
+### **Step 2: Create Help Content Database**
+
+Create `ui/src/content/help-content.ts`:
+
+```typescript
+export const helpContent = {
+  // ========================================
+  // OPERATORS
+  // ========================================
+  'operator-qr-scan': {
+    title: 'How to Scan a QR Code',
+    role: 'operator',
+    content: 'QR codes tell the system what product is being made. This helps the AI know what to expect.',
+    steps: [
+      'Hold the QR code 6-12 inches from the camera',
+      'Wait for the green checkmark',
+      'Start production - the system is now tracking'
+    ],
+    videoUrl: 'https://youtube.com/embed/example-qr-scan',
+    docsUrl: '/docs/operator-guide#qr-scanning'
+  },
+
+  'operator-mer-alert': {
+    title: 'What is an MER Alert?',
+    role: 'operator',
+    content: 'MER (Maintenance Event Record) alerts mean the AI detected something unusual. An engineer will review it.',
+    steps: [
+      'Click the alert to see details',
+      'Read what the AI detected (bearing wear, belt slippage, etc.)',
+      'Wait for engineer to arrive - DO NOT stop production unless told',
+      'Click "Acknowledge" when engineer arrives'
+    ],
+    docsUrl: '/docs/operator-guide#mer-alerts'
+  },
+
+  // ========================================
+  // ENGINEERS
+  // ========================================
+  'engineer-threshold-config': {
+    title: 'How to Configure Thresholds',
+    role: 'engineer',
+    content: 'Thresholds define warning and critical limits for sensor values. Set these based on equipment specs.',
+    steps: [
+      'Select the sensor type (vibration, temperature, current, pressure)',
+      'Drag the yellow slider for WARNING level',
+      'Drag the red slider for CRITICAL level',
+      'Click "Save" to apply to all assets of this type',
+      'Monitor for 24 hours to verify thresholds are correct'
+    ],
+    videoUrl: 'https://youtube.com/embed/example-thresholds',
+    docsUrl: '/docs/engineer-guide#threshold-configuration'
+  },
+
+  'engineer-mer-validation': {
+    title: 'How to Validate an MER',
+    role: 'engineer',
+    content: 'Validating MERs helps the AI learn. Confirm if the AI was correct or wrong.',
+    steps: [
+      'Review sensor data (vibration spike, temperature, etc.)',
+      'Watch the video clip (if available)',
+      'Physically inspect the equipment',
+      'Click "Confirm" if AI was correct, or "False Alarm" if wrong',
+      'Add notes about what you found'
+    ],
+    docsUrl: '/docs/engineer-guide#mer-validation'
+  },
+
+  'engineer-asset-mapping': {
+    title: 'How to Map Sensors to Assets',
+    role: 'engineer',
+    content: 'Asset mapping connects sensors (from PLCs) to physical equipment.',
+    steps: [
+      'Enter Asset ID (e.g., CNC-Line1)',
+      'Select sensor tags from dropdown (OPC UA path)',
+      'Map vibration, temperature, current sensors',
+      'Test the mapping - click "Read Sensors"',
+      'Save the configuration'
+    ],
+    videoUrl: 'https://youtube.com/embed/example-asset-mapping',
+    docsUrl: '/docs/engineer-guide#asset-mapping'
+  },
+
+  // ========================================
+  // ML SCIENTISTS
+  // ========================================
+  'ml-model-deployment': {
+    title: 'How Model Deployment Works',
+    role: 'ml-scientist',
+    content: 'Models are trained on GPU servers, converted to TensorRT, then deployed to edge devices.',
+    steps: [
+      'Training container runs on GPU server (6-8 hours)',
+      'Model is uploaded to S3/MinIO',
+      'Engineer reviews model in UI',
+      'Engineer deploys to 5 pilot devices',
+      'Monitor pilot for 24-48 hours',
+      'If successful, deploy to all 50+ devices'
+    ],
+    videoUrl: 'https://youtube.com/embed/example-deployment',
+    docsUrl: '/docs/mlops-workflow-guide'
+  },
+
+  'ml-training-pipeline': {
+    title: 'How ML Training Works',
+    role: 'ml-scientist',
+    content: 'Training uses LDOs (Labeled Data Objects) collected from edge devices. Labels are 100% accurate from QR codes.',
+    steps: [
+      'Edge devices upload LDOs to S3 (sensor data + context)',
+      'Training container downloads 100K LDOs',
+      'PyTorch model trains for 50 epochs (6-8 hours)',
+      'Model converts to TensorRT (optimized for Jetson)',
+      'Model registered via API for deployment'
+    ],
+    docsUrl: '/docs/ml-architecture-explained'
+  },
+
+  'ml-feedback-loop': {
+    title: 'How the Feedback Loop Works',
+    role: 'ml-scientist',
+    content: 'Low-confidence predictions (<60%) are queued for engineer validation. This improves the model.',
+    steps: [
+      'Edge device makes prediction with low confidence',
+      'Prediction queued in Feedback Queue',
+      'Engineer validates (correct/incorrect)',
+      'Validated data added to training dataset',
+      'Next training run uses this data to improve'
+    ],
+    docsUrl: '/docs/ml-architecture-explained#feedback-loop'
+  },
+
+  'ml-industrial-rag': {
+    title: 'What is Industrial RAG?',
+    role: 'ml-scientist',
+    content: 'Industrial RAG retrieves context (product, recipe, asset data) from Redis to augment sensor data.',
+    steps: [
+      'QR code scanned → CID extracted (e.g., QM-BATCH-12345)',
+      'Redis lookup: GET context:QM-BATCH-12345',
+      'Returns JSON with product_id, recipe_id, asset_id',
+      'This context is fed to AI model alongside sensor data',
+      'Model makes context-aware predictions (94% accuracy)'
+    ],
+    docsUrl: '/docs/ml-architecture-explained#industrial-rag'
+  },
+
+  // ========================================
+  // DEPLOYMENT (ALL ROLES)
+  // ========================================
+  'deployment-options': {
+    title: 'Model Deployment Options',
+    role: 'all',
+    content: 'Choose deployment method based on factory size: Manual (1-10 devices), Script (10-50), or K3s (50+).',
+    steps: [
+      'Small factory (1-10 devices): Use manual SSH deployment',
+      'Medium factory (10-50 devices): Use deploy-model.sh script',
+      'Large factory (50+ devices): Use K3s DaemonSet',
+      'All methods work with Docker or Podman',
+      'See full deployment guide for step-by-step instructions'
+    ],
+    docsUrl: '/docs/deployment-guide-for-manufacturers'
+  }
+};
+```
+
+---
+
+### **Step 3: Add Help Icons to UI**
+
+Update `ui/src/app/admin/models/page.tsx`:
+
+```typescript
+import HelpPopup from '@/components/HelpPopup';
+import { helpContent } from '@/content/help-content';
+
+// In your component:
+<div className="flex items-center gap-2">
+  <h2 className="text-xl font-semibold text-gray-900">
+    MLOps Dashboard
+  </h2>
+  <HelpPopup
+    helpKey="ml-model-deployment"
+    helpContent={helpContent['ml-model-deployment']}
+  />
+</div>
+```
+
+Update `ui/src/app/admin/thresholds/page.tsx`:
+
+```typescript
+<div className="flex items-center gap-2">
+  <h2 className="text-xl font-semibold text-gray-900">
+    Threshold Configuration
+  </h2>
+  <HelpPopup
+    helpKey="engineer-threshold-config"
+    helpContent={helpContent['engineer-threshold-config']}
+  />
+</div>
+```
+
+---
+
+## 📝 **Where to Add Help Icons**
+
+### **Priority 1: High-Impact Pages**
+
+| Page | Help Topics | User Role |
+|------|------------|-----------|
+| **MLOps Dashboard** | Model deployment, pilot testing | ML Scientist |
+| **Thresholds** | How to set limits, sensor types | Engineer |
+| **MER Reports** | What is MER, how to validate | Engineer + Operator |
+| **Feedback Queue** | Feedback loop, retraining | ML Scientist |
+| **Assets** | Sensor mapping, asset master data | Engineer |
+| **Live View** (future) | QR scanning, alerts | Operator |
+
+---
+
+## 🎨 **Visual Examples**
+
+### **Help Icon Placement**
+
+```
+╔═══════════════════════════════════════════════════╗
+║  MLOps Dashboard (?)   ← Help icon here           ║
+║  ─────────────────────────────────────────────    ║
+║                                                    ║
+║  🤖 New Model Available!                          ║
+║  Version: v2.1                                     ║
+║  Accuracy: 94% (+5%)                               ║
+║                                                    ║
+║  What does this mean? (?) ← Contextual help       ║
+║                                                    ║
+║  [Deploy to Pilot (5 devices)] (?)                ║
+║   ↑ Help on what "pilot" means                    ║
+╚═══════════════════════════════════════════════════╝
+```
+
+---
+
+## 🚀 **Implementation Checklist**
+
+- [ ] Create `HelpPopup.tsx` component
+- [ ] Create `help-content.ts` with all help topics
+- [ ] Add help icons to MLOps Dashboard
+- [ ] Add help icons to Thresholds page
+- [ ] Add help icons to MER Reports page
+- [ ] Add help icons to Feedback Queue page
+- [ ] Add help icons to Assets page
+- [ ] Record video tutorials (or link to YouTube)
+- [ ] Test help popups on mobile devices
+- [ ] Add role-based filtering (show only relevant help)
+
+---
+
+## 🎯 **Next Steps**
+
+1. **Implement Help Component** (1 hour)
+2. **Add Help Content** (2 hours)
+3. **Place Help Icons** (1 hour per page)
+4. **Record Videos** (optional, 1 week)
+5. **User Testing** (1 week with operators, engineers, ML scientists)
+
+---
+
+**Goal: Make Context Edge the easiest industrial AI platform to use!** 🏭

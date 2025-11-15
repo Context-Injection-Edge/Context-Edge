@@ -7,22 +7,73 @@
 
 This guide explains the **complete MLOps workflow** for Context Edge:
 
-1. ✅ **Training in Docker containers** (NOT in K3s - runs on GPU server)
+1. ✅ **Training in containers** (Docker or Podman - NOT in K3s - runs on GPU server)
 2. ✅ **Deployment via K3s** (pushes trained models to edge devices)
 3. ✅ **Human approval** (Engineer reviews and approves via UI)
 4. ❌ **NO LLM needed** (no GPT-4, Claude, etc.)
-5. ❌ **NO training engine needed** (no MLflow, W&B - just PyTorch + Docker)
+5. ❌ **NO training engine needed** (no MLflow, W&B - just PyTorch + Docker/Podman)
+
+---
+
+## 🐳 Docker vs Podman
+
+**Both Docker and Podman are fully supported!** Our platform auto-detects and works with either.
+
+### **Podman (Recommended for Industrial OT)**
+
+```bash
+# Rootless, daemonless, more secure
+podman run --device nvidia.com/gpu=all \
+  context-edge/ml-training:latest \
+  python train.py --samples 100000
+```
+
+**Why Podman for industrial:**
+- ✅ **Rootless** - Runs without root privileges (security)
+- ✅ **Daemonless** - No background daemon required (reliability)
+- ✅ **OT-friendly** - Preferred in Operational Technology environments
+- ✅ **Red Hat backed** - Enterprise support via RHEL
+- ✅ **Drop-in replacement** - Same commands as Docker
+
+---
+
+### **Docker (More Common)**
+
+```bash
+# Widely used, well-documented
+docker run --gpus all \
+  context-edge/ml-training:latest \
+  python train.py --samples 100000
+```
+
+**Why Docker:**
+- ✅ **Ecosystem** - Docker Hub, Docker Desktop, extensive docs
+- ✅ **NVIDIA support** - `--gpus all` flag well-tested
+- ✅ **Familiarity** - Most teams already use Docker
+
+---
+
+### **Our Recommendation:**
+
+| Environment | Use | Reason |
+|------------|-----|--------|
+| **Factory servers** | Podman | Rootless security, OT requirements |
+| **Cloud GPU servers** | Docker | Better cloud integration, easier setup |
+| **Developer laptops** | Docker | Easier setup, familiar |
+| **RHEL/Fedora systems** | Podman | Native to Red Hat ecosystem |
+
+**Both work identically - pick what fits your environment!**
 
 ---
 
 ## 🏗️ Architecture: Training vs Deployment
 
-### **Training (Docker + GPU)**
+### **Training (Docker/Podman + GPU)**
 ```
 ┌──────────────────────────────────────────────┐
 │  GPU Server (On-prem or Cloud)              │
 │                                              │
-│  docker run --gpus all \                     │
+│  podman/docker run --gpus all \              │
 │    -v /data:/data \                          │
 │    context-edge/ml-training:latest \         │
 │    python train.py --samples 100000          │
@@ -80,7 +131,20 @@ POST /mlops/models/register
 # On GPU server (NOT in K3s)
 cd /opt/context-edge/ml-training
 
-# Run training container
+# Run training container (Podman - recommended for industrial)
+podman run --device nvidia.com/gpu=all \
+  -v /data/ldos:/data \
+  -v /models:/models \
+  -e POSTGRES_HOST=context-service.local \
+  -e S3_ENDPOINT=http://minio:9000 \
+  context-edge/ml-training:latest \
+  python train.py \
+    --data-path /data \
+    --output-dir /models \
+    --samples 100000 \
+    --epochs 50
+
+# OR with Docker (works identically)
 docker run --gpus all \
   -v /data/ldos:/data \
   -v /models:/models \
@@ -470,8 +534,22 @@ const rollback = async (versionId: string, rollbackToVersion: string) => {
 
 echo "🚀 Starting monthly ML training..."
 
+# Detect Podman or Docker
+if command -v podman &> /dev/null; then
+    CONTAINER_CMD="podman"
+    GPU_FLAG="--device nvidia.com/gpu=all"
+elif command -v docker &> /dev/null; then
+    CONTAINER_CMD="docker"
+    GPU_FLAG="--gpus all"
+else
+    echo "❌ ERROR: Neither Podman nor Docker found!"
+    exit 1
+fi
+
+echo "Using: $CONTAINER_CMD"
+
 # Run training container
-docker run --gpus all \
+$CONTAINER_CMD run $GPU_FLAG \
   -v /data/ldos:/data \
   -v /models:/models \
   -e POSTGRES_HOST=context-service.factory.local \

@@ -36,7 +36,7 @@ interface MER {
     temperature: number[];
     current: number[];
   };
-  plc_snapshot: Record<string, any>;
+  plc_snapshot: Record<string, number | string | boolean>;
 }
 
 export default function MERReportsPage() {
@@ -44,6 +44,7 @@ export default function MERReportsPage() {
   const [selectedMer, setSelectedMer] = useState<MER | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
   useEffect(() => {

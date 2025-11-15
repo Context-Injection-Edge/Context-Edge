@@ -164,7 +164,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <span className="text-red-500 mr-2">•</span>
-                  <span>Data scientists can't trust data accuracy</span>
+                  <span>Data scientists can&apos;t trust data accuracy</span>
                 </li>
               </ul>
             </div>
@@ -234,7 +234,7 @@ export default function Home() {
             <strong>Context Edge</strong> implements our patented <strong>Context Injection Module (CIM)</strong> - a revolutionary platform that fuses physical context identifiers (QR codes) with real-time sensor data at the network edge. This intelligent system serves operators with real-time monitoring, engineers with quality control insights, and data scientists with 100% accurate ML training data.
           </p>
           <p className="text-lg text-gray-900 leading-relaxed">
-            <strong>Patent:</strong> "System and Method for Real-Time Ground-Truth Labeling of Sensor Data Streams Using Physical Contextual Identifiers at the Network Edge" - This isn't just automation, it's <strong>augmentation of human expertise with perfect data</strong>.
+            <strong>Patent:</strong> &quot;System and Method for Real-Time Ground-Truth Labeling of Sensor Data Streams Using Physical Contextual Identifiers at the Network Edge&quot; - This isn&apos;t just automation, it&apos;s <strong>augmentation of human expertise with perfect data</strong>.
           </p>
         </div>
       </section>

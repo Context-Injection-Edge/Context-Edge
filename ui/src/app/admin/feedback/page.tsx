@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from 'react';
 
+interface SensorData {
+  vibration_x: number;
+  vibration_y: number;
+  temperature: number;
+  current: number;
+  timestamp: number;
+  [key: string]: number;
+}
+
 interface FeedbackItem {
-  sensor_data: Record<string, any>;
+  sensor_data: SensorData;
   prediction: {
     failure_mode: string;
     confidence: number;
@@ -21,6 +30,7 @@ export default function FeedbackPage() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
   useEffect(() => {

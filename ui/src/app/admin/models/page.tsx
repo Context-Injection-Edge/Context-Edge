@@ -27,6 +27,7 @@ export default function ModelsPage() {
   const [deploying, setDeploying] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
   useEffect(() => {

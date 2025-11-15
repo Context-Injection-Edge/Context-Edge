@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface MetadataPayload {
   id?: number;
   cid: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at?: string;
   updated_at?: string;
 }
@@ -24,6 +25,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchPayloads();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPayloads = async () => {
@@ -132,12 +134,12 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Context Edge Admin</h1>
-          <a
+          <Link
             href="/"
             className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
           >
             Back to Home
-          </a>
+          </Link>
         </div>
 
         {/* Navigation Cards */}

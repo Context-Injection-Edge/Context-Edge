@@ -1,0 +1,185 @@
+# K3s DaemonSet for Model Deployment
+# This automatically deploys models to ALL edge devices
+#
+# Usage:
+#   # Deploy to pilot devices (5 devices with pilot=true label)
+#   kubectl apply -f model-updater-pilot.yaml
+#
+#   # Deploy to ALL devices
+#   kubectl apply -f model-updater-daemonset.yaml
+#
+# Prerequisites:
+#   1. K3s installed on factory server
+#   2. Edge devices registered as K3s nodes
+#   3. Nodes labeled: kubectl label node edge-001 pilot=true
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: model-updater
+  namespace: context-edge
+  labels:
+    app: model-updater
+    component: mlops
+spec:
+  selector:
+    matchLabels:
+      app: model-updater
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1  # Update one device at a time
+  template:
+    metadata:
+      labels:
+        app: model-updater
+    spec:
+      # Run on edge nodes only (not on control plane)
+      nodeSelector:
+        node-role.kubernetes.io/edge: "true"
+
+      # Tolerate edge node taints
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+
+      # Init container: Download model from S3
+      initContainers:
+      - name: download-model
+        image: amazon/aws-cli:latest
+        env:
+        - name: MODEL_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: model-config
+              key: version
+        - name: S3_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: model-config
+              key: s3_endpoint
+        - name: S3_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: model-config
+              key: s3_bucket
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: s3-credentials
+              key: access_key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-credentials
+              key: secret_key
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "📥 Downloading model ${MODEL_VERSION} from S3..."
+          aws s3 cp \
+            --endpoint-url="${S3_ENDPOINT}" \
+            "s3://${S3_BUCKET}/model-${MODEL_VERSION}.trt" \
+            "/models/model-${MODEL_VERSION}.trt"
+          echo "✅ Download complete"
+        volumeMounts:
+        - name: models
+          mountPath: /models
+
+      # Main container: Install model and restart service
+      containers:
+      - name: model-installer
+        image: alpine:latest
+        env:
+        - name: MODEL_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: model-config
+              key: version
+        - name: SERVICE_NAME
+          value: "context-edge-inference"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "📦 Installing model ${MODEL_VERSION}..."
+
+          # Backup current model
+          cp /host/models/current.trt /host/models/current.trt.backup 2>/dev/null || true
+
+          # Install new model
+          cp /models/model-${MODEL_VERSION}.trt /host/models/
+          chmod 644 /host/models/model-${MODEL_VERSION}.trt
+
+          # Update symlink
+          rm -f /host/models/current.trt
+          ln -s /host/models/model-${MODEL_VERSION}.trt /host/models/current.trt
+
+          # Restart service via systemd (requires hostPID)
+          nsenter --target 1 --mount --uts --ipc --net --pid -- \
+            systemctl restart ${SERVICE_NAME}
+
+          # Wait for service to start
+          sleep 5
+
+          # Check if service started successfully
+          if nsenter --target 1 --mount --uts --ipc --net --pid -- \
+              systemctl is-active --quiet ${SERVICE_NAME}; then
+            echo "✅ Model ${MODEL_VERSION} deployed successfully"
+            exit 0
+          else
+            echo "❌ Service failed to start, rolling back..."
+            rm -f /host/models/current.trt
+            ln -s /host/models/current.trt.backup /host/models/current.trt
+            nsenter --target 1 --mount --uts --ipc --net --pid -- \
+              systemctl restart ${SERVICE_NAME}
+            exit 1
+          fi
+        securityContext:
+          privileged: true  # Required for nsenter to access host systemd
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: host-models
+          mountPath: /host/models
+
+      # Host PID namespace (required for systemctl)
+      hostPID: true
+
+      # Volumes
+      volumes:
+      - name: models
+        emptyDir: {}
+      - name: host-models
+        hostPath:
+          path: /opt/context-edge/models
+          type: Directory
+
+      # Restart policy
+      restartPolicy: Always
+
+---
+# ConfigMap for model version
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-config
+  namespace: context-edge
+data:
+  version: "v2.1"
+  s3_endpoint: "http://minio.factory.local:9000"
+  s3_bucket: "models"
+
+---
+# Secret for S3 credentials
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-credentials
+  namespace: context-edge
+type: Opaque
+stringData:
+  access_key: "minioadmin"
+  secret_key: "minioadmin"

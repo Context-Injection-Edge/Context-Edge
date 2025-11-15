@@ -1,0 +1,163 @@
+# K3s DaemonSet for PILOT Model Deployment
+# Deploys ONLY to pilot devices (labeled with pilot=true)
+#
+# Usage:
+#   1. Label pilot devices:
+#      kubectl label node edge-001 pilot=true
+#      kubectl label node edge-002 pilot=true
+#      kubectl label node edge-003 pilot=true
+#      kubectl label node edge-004 pilot=true
+#      kubectl label node edge-005 pilot=true
+#
+#   2. Deploy model to pilot:
+#      kubectl apply -f model-updater-pilot.yaml
+#
+#   3. Monitor pilot for 24-48 hours
+#
+#   4. If successful, deploy to all:
+#      kubectl apply -f model-updater-daemonset.yaml
+#
+#   5. If failed, rollback:
+#      kubectl delete -f model-updater-pilot.yaml
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: model-updater-pilot
+  namespace: context-edge
+  labels:
+    app: model-updater
+    component: mlops
+    deployment: pilot
+spec:
+  selector:
+    matchLabels:
+      app: model-updater-pilot
+  template:
+    metadata:
+      labels:
+        app: model-updater-pilot
+        deployment: pilot
+    spec:
+      # ONLY run on pilot nodes
+      nodeSelector:
+        pilot: "true"  # Only devices labeled with pilot=true
+
+      # Same as full deployment (see model-updater-daemonset.yaml)
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+
+      initContainers:
+      - name: download-model
+        image: amazon/aws-cli:latest
+        env:
+        - name: MODEL_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: model-config-pilot
+              key: version
+        - name: S3_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: model-config-pilot
+              key: s3_endpoint
+        - name: S3_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: model-config-pilot
+              key: s3_bucket
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: s3-credentials
+              key: access_key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-credentials
+              key: secret_key
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "📥 [PILOT] Downloading model ${MODEL_VERSION} from S3..."
+          aws s3 cp \
+            --endpoint-url="${S3_ENDPOINT}" \
+            "s3://${S3_BUCKET}/model-${MODEL_VERSION}.trt" \
+            "/models/model-${MODEL_VERSION}.trt"
+          echo "✅ Download complete"
+        volumeMounts:
+        - name: models
+          mountPath: /models
+
+      containers:
+      - name: model-installer
+        image: alpine:latest
+        env:
+        - name: MODEL_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: model-config-pilot
+              key: version
+        - name: SERVICE_NAME
+          value: "context-edge-inference"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "📦 [PILOT] Installing model ${MODEL_VERSION}..."
+
+          cp /host/models/current.trt /host/models/current.trt.backup 2>/dev/null || true
+          cp /models/model-${MODEL_VERSION}.trt /host/models/
+          chmod 644 /host/models/model-${MODEL_VERSION}.trt
+          rm -f /host/models/current.trt
+          ln -s /host/models/model-${MODEL_VERSION}.trt /host/models/current.trt
+
+          nsenter --target 1 --mount --uts --ipc --net --pid -- \
+            systemctl restart ${SERVICE_NAME}
+
+          sleep 5
+
+          if nsenter --target 1 --mount --uts --ipc --net --pid -- \
+              systemctl is-active --quiet ${SERVICE_NAME}; then
+            echo "✅ [PILOT] Model ${MODEL_VERSION} deployed successfully"
+            exit 0
+          else
+            echo "❌ [PILOT] Service failed, rolling back..."
+            rm -f /host/models/current.trt
+            ln -s /host/models/current.trt.backup /host/models/current.trt
+            nsenter --target 1 --mount --uts --ipc --net --pid -- \
+              systemctl restart ${SERVICE_NAME}
+            exit 1
+          fi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: host-models
+          mountPath: /host/models
+
+      hostPID: true
+
+      volumes:
+      - name: models
+        emptyDir: {}
+      - name: host-models
+        hostPath:
+          path: /opt/context-edge/models
+          type: Directory
+
+---
+# Pilot ConfigMap (separate from full deployment)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-config-pilot
+  namespace: context-edge
+data:
+  version: "v2.1"  # Change this to deploy new pilot version
+  s3_endpoint: "http://minio.factory.local:9000"
+  s3_bucket: "models"

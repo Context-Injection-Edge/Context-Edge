@@ -6,8 +6,30 @@
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Context-Injection-Edge/Context-Edge)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-5.0%2B-blue)](https://www.typescriptlang.org/)
+[![Container](https://img.shields.io/badge/container-Docker%20%7C%20Podman-blue)](https://www.docker.com/)
+[![K3s](https://img.shields.io/badge/kubernetes-K3s%20Compatible-blue)](https://k3s.io/)
 
 > **Transform your factory floor into an intelligent, self-learning manufacturing system** with real-time AI, automated quality control, and 100% accurate ML training data.
+
+---
+
+## 🏭 **Built for Global Manufacturing**
+
+Context Edge is a **platform** designed for manufacturers across industries:
+
+- ✅ **Automotive** - CNC monitoring, assembly line quality control, predictive maintenance
+- ✅ **Pharmaceutical** - Batch tracking, FDA compliance, contamination detection
+- ✅ **Food Processing** - Quality assurance, temperature monitoring, packaging inspection
+- ✅ **Electronics** - SMT line monitoring, defect detection, component tracing
+
+**User-friendly for all roles:**
+- 👷 **Operators** - Simple visual interface, QR scanning, instant alerts
+- 👨‍🔧 **Engineers** - Threshold management, asset mapping, MER validation
+- 👨‍💻 **ML Scientists** - Training pipeline, model deployment, performance monitoring
+
+**In-platform help system** with role-specific guides, video tutorials, and contextual tooltips.
+
+**Flexible deployment**: Works with Docker or Podman, scales from 1 device to 500+ with manual, script, or K3s deployment.
 
 ---
 
@@ -268,6 +290,65 @@ ML Training: Cloud GPU (8 hours/month)
 - ✅ Scalability (cloud) + compliance (on-prem)
 
 **Most industrial customers choose this approach!**
+
+---
+
+## 🚀 **Model Deployment Methods**
+
+After training completes, choose how to deploy models to edge devices based on factory size:
+
+### **Method 1: Manual Deployment** (1-10 devices)
+
+```bash
+# Simple SSH deployment
+scp model-v2.1.trt nvidia@edge-001:/opt/context-edge/models/
+ssh nvidia@edge-001 "systemctl restart context-edge-inference"
+```
+
+**Best for**: Pilots, demos, small factories
+**Time**: 5 minutes per device
+**Setup**: Just SSH access needed
+
+---
+
+### **Method 2: Automated Script** (10-50 devices)
+
+```bash
+# One command deploys to all devices
+./ml-training/deploy-model.sh v2.1 --pilot   # Deploy to 5 pilot devices
+./ml-training/deploy-model.sh v2.1 --all     # Deploy to all devices
+
+# Automatic rollback if deployment fails
+./ml-training/deploy-model.sh v2.0 --rollback
+```
+
+**Best for**: Medium factories, multi-line production
+**Time**: 10 minutes for 50 devices
+**Features**:
+- ✅ Pilot testing (5 devices first)
+- ✅ Automatic rollback on failure
+- ✅ Progress reporting
+- ✅ Device health checks
+
+---
+
+### **Method 3: K3s Orchestration** (50-500+ devices)
+
+```bash
+# Kubernetes-based automation
+kubectl apply -f k8s/model-updater-pilot.yaml       # Deploy to 5 pilot devices
+kubectl apply -f k8s/model-updater-daemonset.yaml   # Deploy to ALL devices
+```
+
+**Best for**: Large multi-site deployments
+**Time**: 2 minutes for 500 devices
+**Features**:
+- ✅ Parallel deployment to all devices
+- ✅ Built-in health checks
+- ✅ Automatic rollback
+- ✅ Declarative (GitOps-friendly)
+
+**📖 Complete Deployment Guide**: [Deployment Guide for Manufacturers](docs/deployment-guide-for-manufacturers.md)
 
 ---
 
@@ -569,6 +650,7 @@ Context-Edge/
 │   ├── train.py            # PyTorch training pipeline
 │   ├── convert.py          # TensorRT conversion
 │   ├── deploy.py           # K8s model deployment
+│   ├── deploy-model.sh     # 🆕 Simple deployment script (1-50 devices)
 │   ├── Dockerfile          # GPU training container
 │   ├── requirements.txt    # PyTorch, TensorRT, etc.
 │   ├── test-container.sh   # Container validation
@@ -585,11 +667,14 @@ Context-Edge/
 │   │   │   └── feedback/page.tsx           # Retraining queue
 │   └── package.json
 ├── docs/                   # Documentation
-│   ├── deployment-progression-guide.md
-│   ├── industrial-protocol-setup.md
-│   ├── patent-summary.md
-│   ├── ml-architecture-explained.md        # How ML training works
-│   └── api-docs.md
+│   ├── deployment-guide-for-manufacturers.md  # 🆕 3 deployment methods + industry examples
+│   ├── mlops-workflow-guide.md                # 🆕 Human-in-the-loop model deployment
+│   ├── in-platform-help-system.md             # 🆕 Role-specific help design
+│   ├── ml-architecture-explained.md           # How ML training works
+│   ├── deployment-progression-guide.md        # Laptop → Pilot → Production
+│   ├── industrial-protocol-setup.md           # OPC UA, Modbus, EtherNet/IP
+│   ├── patent-summary.md                      # CIM patent details
+│   └── api-docs.md                           # REST API reference
 ├── k8s/                    # Kubernetes/K3s manifests
 │   ├── postgres-statefulset.yaml
 │   ├── redis-deployment.yaml
@@ -699,9 +784,31 @@ scp -r context_edge/ nvidia@jetson-001:/opt/
 
 ---
 
-## 📞 Support & Community
+## 📞 Support & Documentation
 
-- **📖 Documentation**: [/docs](docs/)
+### **📖 Complete Documentation**
+
+**Getting Started:**
+- **[Deployment Guide for Manufacturers](docs/deployment-guide-for-manufacturers.md)** - Choose deployment method based on factory size
+- **[Quick Start Guide](#-quick-start-5-minutes)** - Run locally in 5 minutes
+- **[Deployment Progression](docs/deployment-progression-guide.md)** - Laptop → Pilot → Production
+
+**For ML Scientists:**
+- **[MLOps Workflow Guide](docs/mlops-workflow-guide.md)** - Human-in-the-loop model deployment
+- **[ML Architecture Explained](docs/ml-architecture-explained.md)** - How training and inference work
+- **[ML Training README](ml-training/README.md)** - Training infrastructure details
+
+**For Engineers:**
+- **[Industrial Protocol Setup](docs/industrial-protocol-setup.md)** - OPC UA, Modbus, EtherNet/IP
+- **[K8s/K3s Deployment](k8s/README.md)** - Kubernetes-based automation
+
+**For Platform Developers:**
+- **[In-Platform Help System](docs/in-platform-help-system.md)** - Role-specific help design
+- **[API Documentation](http://localhost:8000/docs)** - REST API reference
+- **[Patent Summary](docs/patent-summary.md)** - CIM technology details
+
+### **💬 Community & Support**
+
 - **🐛 Issues**: [GitHub Issues](https://github.com/Context-Injection-Edge/Context-Edge/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/Context-Injection-Edge/Context-Edge/discussions)
 - **📧 Email**: support@context-edge.com

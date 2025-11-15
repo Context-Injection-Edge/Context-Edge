@@ -126,6 +126,151 @@ Data scientist labels data           100% accurate        Alerts engineer
 
 ---
 
+## 🧠 How ML Training Works
+
+**IMPORTANT**: Context Edge has **TWO SEPARATE SYSTEMS** working together:
+
+### **System 1: Runtime Backend** (Always Running - 24/7)
+```
+┌─────────────────────────────────────────────────┐
+│  RUNTIME SERVICES (CPU servers)                │
+│                                                 │
+│  • context-service (FastAPI)                   │
+│  • data-ingestion (FastAPI)                    │
+│  • PostgreSQL (metadata)                       │
+│  • Redis (Industrial RAG)                      │
+│                                                 │
+│  Purpose: Handle real-time operations          │
+│  Hardware: 4 CPU cores, 16GB RAM               │
+│  Cost: ~$300-500/month                         │
+└─────────────────────────────────────────────────┘
+```
+
+### **System 2: ML Training Backend** (Runs Monthly - 8 hours)
+```
+┌─────────────────────────────────────────────────┐
+│  TRAINING SERVICE (GPU servers)                │
+│                                                 │
+│  • ml-training/ (PyTorch container)            │
+│  • Reads LDOs from PostgreSQL/S3               │
+│  • Trains models on GPU                        │
+│  • Converts to TensorRT                        │
+│  • Deploys to edge devices                     │
+│                                                 │
+│  Purpose: Continuous model improvement         │
+│  Hardware: NVIDIA A100/H100 GPUs               │
+│  Cost: ~$250-500/month (8 hours of GPU time)   │
+└─────────────────────────────────────────────────┘
+```
+
+### **Two Separate Loops**
+
+#### **Loop 1: Real-Time Inference** (Edge - <100ms)
+```
+QR Scan → Industrial RAG → Sensor Fusion → AI Model → Prediction
+   ↓            ↓               ↓             ↓           ↓
+Camera    Redis Context    Vibration/Temp  TensorRT   MER Alert
+```
+
+**What Industrial RAG Does:**
+- ✅ **Retrieves context** (product, recipe, asset metadata) from Redis
+- ✅ **Augments sensor data** for better predictions
+- ✅ **Sub-millisecond lookups** for real-time performance
+- ❌ **Does NOT train models** - only retrieval!
+
+#### **Loop 2: Continuous Learning** (Cloud/On-Prem - Monthly)
+```
+LDOs → Training → TensorRT → Deployment → Edge Devices
+  ↓        ↓          ↓           ↓            ↓
+100K   PyTorch   Optimize    Gradual      50+ Jetsons
+samples  GPU      INT8       Rollout      (v2.1 model)
+```
+
+**How Training Works:**
+1. **Data Collection** - Edge devices upload LDOs (100% labeled) to S3
+2. **Monthly Training Job** - PyTorch training on GPU server (6-8 hours)
+3. **Model Conversion** - PyTorch → TensorRT (optimized for Jetson)
+4. **Gradual Deployment** - Pilot 5 devices → monitor → deploy to all 50+
+
+**📖 Complete ML Training Guide**: [ml-training/README.md](ml-training/README.md)
+
+---
+
+## 🚢 ML Training Deployment Options
+
+Customers have **three options** for where ML training runs:
+
+### **Option 1: On-Premises GPU Server** (Most Common for Industrial)
+```bash
+# Customer's factory server
+cd ml-training/
+docker run --gpus all \
+  -v /data:/data \
+  context-edge/ml-training:latest \
+  python train.py --samples 100000 --epochs 50
+```
+
+**Pros:**
+- ✅ Data stays on-premises (security/compliance)
+- ✅ No cloud egress fees
+- ✅ Can run on same server as runtime backend
+
+**Cons:**
+- ❌ Upfront GPU investment ($20K-50K)
+- ❌ Customer manages hardware
+
+**Hardware:**
+- 4x NVIDIA RTX 4090 or 1-2x A100 GPUs
+- Can share server with runtime backend (runtime uses CPU, training uses GPU)
+
+---
+
+### **Option 2: Cloud GPU Rental** (Most Flexible)
+```bash
+# AWS p4d.24xlarge instance (8x A100 GPUs)
+aws ec2 run-instances --instance-type p4d.24xlarge
+
+# SSH and run training
+ssh ubuntu@instance-ip
+docker run --gpus all context-edge/ml-training ...
+```
+
+**Pros:**
+- ✅ No upfront GPU investment
+- ✅ Only pay for 8 hours/month (~$250)
+- ✅ Scalable (1 GPU or 8 GPUs based on dataset size)
+
+**Cons:**
+- ❌ Data egress from factory to cloud (can use VPN)
+- ❌ Recurring cloud costs
+
+**Cloud Options:**
+- **AWS**: p4d.24xlarge ($32/hour)
+- **Azure**: NC A100 v4 series ($27/hour)
+- **Google Cloud**: a2-highgpu instances ($30/hour)
+
+---
+
+### **Option 3: Hybrid** (Best of Both Worlds)
+```
+Runtime Backend: On-premises (data stays local)
+       ↓
+   PostgreSQL metadata (which LDOs to train on)
+       ↓
+ML Training: Cloud GPU (8 hours/month)
+       ↓
+   Download LDOs from S3 → Train → Deploy back to edge
+```
+
+**Pros:**
+- ✅ Data security (runtime on-prem)
+- ✅ Cost optimization (rent GPU only when needed)
+- ✅ Scalability (cloud) + compliance (on-prem)
+
+**Most industrial customers choose this approach!**
+
+---
+
 ## 🎁 Platform Features
 
 ### 🔴 **Live Production Monitoring**
@@ -257,10 +402,16 @@ print(f"AI Prediction: {ldo.get('ai_inference', {}).get('failure_mode', 'Normal'
 
 ### **Backend (Python)**
 - **FastAPI** - High-performance REST APIs
-- **PostgreSQL 15** - Metadata storage
+- **PostgreSQL 15** - Production metadata storage (recommended)
+- **SQLite** - Development/small deployments (optional alternative)
 - **Redis 7** - Industrial RAG context store
-- **SQLAlchemy** - ORM for database operations
+- **SQLAlchemy** - ORM for database operations (supports both PostgreSQL & SQLite)
 - **Pydantic** - Data validation
+
+**Database Flexibility:**
+- **PostgreSQL** - Recommended for production (50+ devices, high throughput)
+- **SQLite** - Perfect for development, demos, small pilots (1-10 devices)
+- Both supported via SQLAlchemy - switch with environment variable!
 
 ### **Frontend (TypeScript)**
 - **Next.js 16** - React 19 framework with Turbopack
@@ -361,13 +512,35 @@ podman-compose up -d
 **Perfect for**: Pilot testing, ROI measurement, UAT
 
 ### **Stage 3: Production (Kubernetes Cluster)**
+
+**RECOMMENDED: Use K3s for Industrial Edge Deployments**
+
+[K3s](https://k3s.io/) is a lightweight Kubernetes distribution **perfect for industrial/edge environments**:
+
 ```bash
-# Deploy to K8s cluster
+# Install K3s on factory server (single command!)
+curl -sfL https://get.k3s.io | sh -
+
+# Deploy Context Edge to K3s
 kubectl apply -f k8s/
 
 # Fleet of 50+ edge devices across factories
 ```
-**Perfect for**: Multi-site, HA, enterprise scale
+
+**Why K3s over K8s?**
+- ✅ **Lightweight** - Single binary <100MB (vs K8s multi-GB)
+- ✅ **Edge-optimized** - Designed for IoT/industrial use cases
+- ✅ **Simple** - Uses SQLite for cluster state (vs etcd in K8s)
+- ✅ **Resource-efficient** - Runs on <512MB RAM
+- ✅ **Industry standard** - Used by SUSE Rancher, AWS EKS Anywhere
+- ✅ **Production-ready** - CNCF certified Kubernetes
+
+**Database Clarification:**
+- **K3s uses SQLite** for its **OWN** cluster metadata (Kubernetes state)
+- **Context Edge uses PostgreSQL** for **APPLICATION** data (LDOs, assets, thresholds)
+- **These are TWO DIFFERENT databases** - both run side-by-side
+
+**Perfect for**: Multi-site factories, HA, enterprise scale (50-500+ devices)
 
 **📖 Complete Guide**: [Deployment Progression Guide](docs/deployment-progression-guide.md)
 
@@ -392,6 +565,14 @@ Context-Edge/
 │   │   ├── modbus_protocol.py    # Modbus TCP client
 │   │   └── ldo_generator.py      # Output
 │   └── setup.py
+├── ml-training/            # ML Training Backend (SEPARATE - runs monthly)
+│   ├── train.py            # PyTorch training pipeline
+│   ├── convert.py          # TensorRT conversion
+│   ├── deploy.py           # K8s model deployment
+│   ├── Dockerfile          # GPU training container
+│   ├── requirements.txt    # PyTorch, TensorRT, etc.
+│   ├── test-container.sh   # Container validation
+│   └── README.md           # Training infrastructure guide
 ├── ui/                     # Web Dashboard (Next.js/React/TypeScript)
 │   ├── src/app/
 │   │   ├── page.tsx                        # Landing page
@@ -407,8 +588,9 @@ Context-Edge/
 │   ├── deployment-progression-guide.md
 │   ├── industrial-protocol-setup.md
 │   ├── patent-summary.md
+│   ├── ml-architecture-explained.md        # How ML training works
 │   └── api-docs.md
-├── k8s/                    # Kubernetes manifests
+├── k8s/                    # Kubernetes/K3s manifests
 │   ├── postgres-statefulset.yaml
 │   ├── redis-deployment.yaml
 │   ├── context-service-deployment.yaml

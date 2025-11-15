@@ -217,8 +217,9 @@ export default function ModelsPage() {
                         onClick={() => deployModel(model.version_id, devices.filter(d => d.status === 'online').map(d => d.device_id))}
                         disabled={deploying === model.version_id || devices.filter(d => d.status === 'online').length === 0}
                         className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50"
+                        title="Deploy this trained model to all online edge devices"
                       >
-                        {deploying === model.version_id ? 'Deploying...' : 'Deploy to All Online'}
+                        {deploying === model.version_id ? 'Deploying...' : 'Deploy Model to All Devices'}
                       </button>
                     </div>
                   </div>

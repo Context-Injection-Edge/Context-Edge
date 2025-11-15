@@ -1,0 +1,25 @@
+# Context Edge ML Training Dependencies
+
+# Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+tensorboard>=2.12.0
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.2.0
+
+# Database & Storage
+psycopg2-binary>=2.9.0
+boto3>=1.26.0
+
+# TensorRT (for conversion)
+# Note: Install separately based on platform
+# NVIDIA Jetson: sudo apt install python3-libnvinfer
+# x86_64: pip install tensorrt
+
+# Utilities
+tqdm>=4.65.0
+pyyaml>=6.0
+python-dotenv>=1.0.0

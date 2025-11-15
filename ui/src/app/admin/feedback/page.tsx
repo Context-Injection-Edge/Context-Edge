@@ -173,7 +173,7 @@ export default function FeedbackPage() {
                 <h2 className="text-xl font-semibold text-gray-900">
                   Low-Confidence Predictions ({feedbackItems.length})
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-900 mt-1">
                   Predictions requiring human validation for model retraining
                 </p>
               </div>
@@ -189,13 +189,13 @@ export default function FeedbackPage() {
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">{item.prediction.failure_mode}</h3>
-                        <p className="text-sm text-gray-600">CID: {item.cid}</p>
+                        <p className="text-sm text-gray-900">CID: {item.cid}</p>
                       </div>
                       <div className={`px-2 py-1 rounded text-sm font-semibold ${getConfidenceColor(item.prediction.confidence)}`}>
                         {(item.prediction.confidence * 100).toFixed(1)}%
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-800">
                       {new Date(item.timestamp).toLocaleString()}
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
@@ -320,25 +320,25 @@ export default function FeedbackPage() {
               <div className="text-3xl font-bold text-blue-600 mb-2">
                 {feedbackItems.length}
               </div>
-              <div className="text-gray-600">Items in Queue</div>
+              <div className="text-gray-900">Items in Queue</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-red-600 mb-2">
                 {feedbackItems.filter(item => item.prediction.confidence < 0.6).length}
               </div>
-              <div className="text-gray-600">High Priority (&lt;60%)</div>
+              <div className="text-gray-900">High Priority (&lt;60%)</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-yellow-600 mb-2">
                 {feedbackItems.filter(item => item.prediction.confidence >= 0.6 && item.prediction.confidence < 0.8).length}
               </div>
-              <div className="text-gray-600">Medium Priority (60-80%)</div>
+              <div className="text-gray-900">Medium Priority (60-80%)</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">
                 {feedbackItems.filter(item => item.prediction.confidence >= 0.8).length}
               </div>
-              <div className="text-gray-600">Low Priority (&ge;80%)</div>
+              <div className="text-gray-900">Low Priority (&ge;80%)</div>
             </div>
           </div>
         </div>

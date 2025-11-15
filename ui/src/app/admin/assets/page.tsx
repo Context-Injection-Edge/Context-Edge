@@ -185,9 +185,9 @@ export default function AssetsPage() {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">{asset.name}</h3>
-                        <p className="text-sm text-gray-600">ID: {asset.asset_id}</p>
-                        <p className="text-sm text-gray-600">{asset.location}</p>
-                        <p className="text-xs text-gray-500">{asset.sensor_mappings.length} sensors mapped</p>
+                        <p className="text-sm text-gray-900">ID: {asset.asset_id}</p>
+                        <p className="text-sm text-gray-900">{asset.location}</p>
+                        <p className="text-xs text-gray-800">{asset.sensor_mappings.length} sensors mapped</p>
                       </div>
                       <button
                         onClick={(e) => {
@@ -370,7 +370,7 @@ export default function AssetsPage() {
                   {selectedAsset.sensor_mappings.map((mapping, index) => (
                     <div key={index} className="p-2 bg-gray-50 rounded text-sm">
                       <div className="font-medium">{mapping.sensor_tag}</div>
-                      <div className="text-gray-600">{mapping.sensor_type} - {mapping.description}</div>
+                      <div className="text-gray-900">{mapping.sensor_type} - {mapping.description}</div>
                     </div>
                   ))}
                 </div>

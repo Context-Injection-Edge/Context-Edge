@@ -143,7 +143,7 @@ export default function ThresholdsPage() {
                     }`}
                   >
                     <div className="font-medium capitalize">{threshold.sensor_type}</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-900">
                       Warning: {threshold.warning_low} - {threshold.warning_high} {threshold.unit}
                     </div>
                   </button>
@@ -203,7 +203,7 @@ export default function ThresholdsPage() {
                         }}
                       />
                     </div>
-                    <div className="flex justify-between text-sm text-gray-600 mt-2">
+                    <div className="flex justify-between text-sm text-gray-900 mt-2">
                       <span>0 {selectedThreshold.unit}</span>
                       <span>{selectedThreshold.max_value} {selectedThreshold.unit}</span>
                     </div>

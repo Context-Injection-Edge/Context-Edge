@@ -153,9 +153,9 @@ export default function ModelsPage() {
       case 'online': return 'text-green-600';
       case 'offline': return 'text-red-600';
       case 'deployed': return 'text-blue-600';
-      case 'available': return 'text-gray-600';
+      case 'available': return 'text-gray-900';
       case 'deploying': return 'text-yellow-600';
-      default: return 'text-gray-600';
+      default: return 'text-gray-900';
     }
   };
 
@@ -198,19 +198,19 @@ export default function ModelsPage() {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="font-semibold text-gray-900">{model.name}</h3>
-                        <p className="text-sm text-gray-600">Version: {model.version_id}</p>
+                        <p className="text-sm text-gray-900">Version: {model.version_id}</p>
                       </div>
                       <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(model.status)}`}>
                         {model.status}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700 mb-3">{model.description}</p>
-                    <div className="flex justify-between items-center text-sm text-gray-600 mb-3">
+                    <div className="flex justify-between items-center text-sm text-gray-900 mb-3">
                       <span>Accuracy: {(model.accuracy * 100).toFixed(1)}%</span>
                       <span>Created: {new Date(model.created_at).toLocaleDateString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-900">
                         Deployed to {model.deployed_devices.length} device(s)
                       </span>
                       <button
@@ -237,7 +237,7 @@ export default function ModelsPage() {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="font-semibold text-gray-900">{device.name}</h3>
-                        <p className="text-sm text-gray-600">ID: {device.device_id}</p>
+                        <p className="text-sm text-gray-900">ID: {device.device_id}</p>
                       </div>
                       <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(device.status)}`}>
                         {device.status}
@@ -245,11 +245,11 @@ export default function ModelsPage() {
                     </div>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Current Model:</span>
+                        <span className="text-gray-900">Current Model:</span>
                         <span className="font-mono">{device.current_model}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Last Seen:</span>
+                        <span className="text-gray-900">Last Seen:</span>
                         <span className={getStatusColor(device.status)}>
                           {new Date(device.last_seen).toLocaleString()}
                         </span>
@@ -293,19 +293,19 @@ export default function ModelsPage() {
               <div className="text-3xl font-bold text-blue-600 mb-2">
                 {models.filter(m => m.status === 'deployed').length}
               </div>
-              <div className="text-gray-600">Active Models</div>
+              <div className="text-gray-900">Active Models</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">
                 {devices.filter(d => d.status === 'online').length}/{devices.length}
               </div>
-              <div className="text-gray-600">Online Devices</div>
+              <div className="text-gray-900">Online Devices</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-purple-600 mb-2">
                 {(models.reduce((acc, m) => acc + m.accuracy, 0) / models.length * 100).toFixed(1)}%
               </div>
-              <div className="text-gray-600">Average Accuracy</div>
+              <div className="text-gray-900">Average Accuracy</div>
             </div>
           </div>
         </div>

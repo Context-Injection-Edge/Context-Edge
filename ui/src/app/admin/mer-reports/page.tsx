@@ -213,8 +213,8 @@ export default function MERReportsPage() {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">{mer.asset_id}</h3>
-                        <p className="text-sm text-gray-600">{mer.failure_mode}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm text-gray-900">{mer.failure_mode}</p>
+                        <p className="text-xs text-gray-800">
                           {new Date(mer.timestamp).toLocaleString()}
                         </p>
                       </div>
@@ -225,7 +225,7 @@ export default function MERReportsPage() {
                         }`}>
                           {(mer.confidence * 100).toFixed(1)}%
                         </div>
-                        <div className="text-xs text-gray-500">confidence</div>
+                        <div className="text-xs text-gray-800">confidence</div>
                       </div>
                     </div>
                   </div>
@@ -266,7 +266,7 @@ export default function MERReportsPage() {
                     <div className="mb-6">
                       <h3 className="font-semibold mb-2">Video Evidence</h3>
                       <div className="bg-gray-200 h-32 flex items-center justify-center rounded">
-                        <span className="text-gray-600">Video Player: {selectedMer.video_url}</span>
+                        <span className="text-gray-900">Video Player: {selectedMer.video_url}</span>
                       </div>
                     </div>
                   )}

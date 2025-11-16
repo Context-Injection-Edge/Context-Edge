@@ -126,26 +126,26 @@ export default function Home() {
             {/* Left: Main Message */}
             <div>
               <h2 className="text-3xl font-bold mb-6 leading-tight">
-                Edge AI Platform for<br/>
-                Zero-Effort ML Training Data
+                Industrial Edge AI Platform<br/>
+                for Smart Manufacturing
               </h2>
               <p className="text-lg text-blue-100 mb-8 leading-relaxed">
-                Context Edge is an <strong className="text-white">edge AI platform</strong> that synchronously fuses
-                <strong className="text-white"> physical context identifiers</strong> (QR, RFID, OCR, barcodes) with
-                <strong className="text-white"> real-time video and sensor streams</strong> directly at the edge—creating
-                100% accurately labeled training data automatically. No cloud dependency. No manual labeling.
-                Sub-100ms decisions where it matters.
+                Context Edge is an <strong className="text-white">industrial edge AI platform</strong> that runs machine learning
+                models directly at the edge, synchronously fusing <strong className="text-white">physical context identifiers</strong> (QR, RFID, OCR, barcodes)
+                with <strong className="text-white">real-time video and sensor streams</strong>. Deploy AI for quality control, defect detection,
+                and process optimization—while automatically generating perfectly labeled training data for continuous learning.
+                No cloud dependency. Sub-100ms decisions where it matters.
               </p>
 
               {/* Key Benefits */}
               <div className="space-y-4 mb-8">
                 <div className="flex items-start">
-                  <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center mr-3 mt-1">
-                    <span className="text-yellow-900 text-sm font-bold">⚡</span>
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-green-900 text-sm">✓</span>
                   </div>
                   <div>
-                    <strong className="text-white">Edge AI Platform:</strong>
-                    <span className="text-blue-100"> Sub-100ms latency • 70% bandwidth reduction • Works air-gapped</span>
+                    <strong className="text-white">Real-Time AI Inference:</strong>
+                    <span className="text-blue-100"> Quality control • Defect detection • Sub-100ms at edge • Works air-gapped</span>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -153,8 +153,8 @@ export default function Home() {
                     <span className="text-green-900 text-sm">✓</span>
                   </div>
                   <div>
-                    <strong className="text-white">Physical Ground Truth:</strong>
-                    <span className="text-blue-100"> QR, RFID, OCR, barcodes provide 100% accurate context</span>
+                    <strong className="text-white">Automated Training Data:</strong>
+                    <span className="text-blue-100"> 100% accurate labels • Zero manual work • Continuous learning</span>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -162,8 +162,8 @@ export default function Home() {
                     <span className="text-green-900 text-sm">✓</span>
                   </div>
                   <div>
-                    <strong className="text-white">Real-Time Fusion:</strong>
-                    <span className="text-blue-100"> Video + sensor streams synchronized with context at edge</span>
+                    <strong className="text-white">Multi-Source Fusion:</strong>
+                    <span className="text-blue-100"> QR, RFID, OCR, barcodes + video/sensor streams synchronized at edge</span>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -171,8 +171,8 @@ export default function Home() {
                     <span className="text-green-900 text-sm">✓</span>
                   </div>
                   <div>
-                    <strong className="text-white">Zero Manual Work:</strong>
-                    <span className="text-blue-100"> Automated labeling saves 90% costs, continuous learning</span>
+                    <strong className="text-white">Production Ready:</strong>
+                    <span className="text-blue-100"> Edge MLOps • Human-in-the-loop • Model deployment • Continuous monitoring</span>
                   </div>
                 </div>
               </div>
@@ -187,12 +187,12 @@ export default function Home() {
 
             {/* Right: How CIM Works */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h3 className="text-2xl font-bold mb-6 text-yellow-300">How CIM Fusion Works</h3>
+              <h3 className="text-2xl font-bold mb-6 text-yellow-300 text-center">How CIM Fusion Works</h3>
 
               {/* Multiple Inputs */}
-              <div className="mb-6">
+              <div className="mb-6 text-center">
                 <div className="text-sm text-blue-200 mb-2">STEP 1: Multiple Context Sources</div>
-                <div className="flex flex-wrap gap-2 mb-1">
+                <div className="flex flex-wrap gap-2 mb-1 justify-center">
                   <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">QR Codes</span>
                   <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">RFID Tags</span>
                   <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">OCR Text</span>
@@ -204,14 +204,14 @@ export default function Home() {
               <div className="text-center text-3xl text-yellow-300 mb-4">+</div>
 
               {/* Real-Time Streams */}
-              <div className="mb-6">
-                <div className="text-sm text-blue-200 mb-2">STEP 2: Real-Time Streams</div>
-                <div className="flex flex-wrap gap-2 mb-1">
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Video Streams</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">PLC Sensors</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Temperature</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Vibration</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Pressure</span>
+              <div className="mb-6 text-center">
+                <div className="text-sm text-blue-200 mb-2">STEP 2: Real-Time Data Streams</div>
+                <div className="flex flex-wrap gap-2 mb-1 justify-center">
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Video Feeds</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">PLC Data</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">SCADA Systems</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">IoT Sensors</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Industrial Networks</span>
                 </div>
               </div>
 

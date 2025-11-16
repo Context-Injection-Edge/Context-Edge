@@ -3,6 +3,10 @@
 from opcua import Client
 from typing import Dict, Any, Optional
 import time
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class OPCUAProtocol:
     def __init__(self, server_url: str, node_mappings: Dict[str, str], max_retries: int = 3):
@@ -24,14 +28,14 @@ class OPCUAProtocol:
             try:
                 self.client = Client(self.server_url)
                 self.client.connect()
-                print(f"Connected to OPC UA server: {self.server_url}")
+                logger.info(f"✅ Connected to OPC UA server: {self.server_url}")
                 return True
             except Exception as e:
-                print(f"Connection attempt {attempt + 1}/{self.max_retries} failed: {e}")
+                logger.warning(f"⚠️  Connection attempt {attempt + 1}/{self.max_retries} failed: {e}")
                 self.client = None
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt)  # Exponential backoff
-        print(f"Failed to connect to OPC UA server after {self.max_retries} attempts")
+        logger.error(f"❌ Failed to connect to OPC UA server after {self.max_retries} attempts")
         return False
 
     def disconnect(self):
@@ -57,7 +61,7 @@ class OPCUAProtocol:
                 value = node.get_value()
                 data[sensor_name] = value
         except Exception as e:
-            print(f"Error reading OPC UA data: {e}")
+            logger.error(f"❌ Error reading OPC UA data: {e}")
             # Try to reconnect on next call
             self.disconnect()
 

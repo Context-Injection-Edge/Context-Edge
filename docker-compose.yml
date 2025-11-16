@@ -51,6 +51,31 @@ services:
       - ./data-ingestion:/app:Z
       - ldo_storage:/app/storage/ldos
 
+  edge-server:
+    build: ./edge-server
+    ports:
+      - "5000:5000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: context_edge
+      POSTGRES_USER: context_user
+      POSTGRES_PASSWORD: context_pass
+      USE_MOCK_SENSORS: "true"
+      # Optional: Configure real PLC connections
+      # MODBUS_HOST: 192.168.1.10
+      # MODBUS_PORT: 502
+      # OPCUA_SERVER_URL: opc.tcp://192.168.1.11:4840
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./edge-server:/app:Z
+
 volumes:
   postgres_data:
   redis_data:

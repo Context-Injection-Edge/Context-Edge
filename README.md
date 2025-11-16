@@ -654,22 +654,34 @@ Context-Edge/
 ├── data-ingestion/         # LDO pipeline (Python/FastAPI)
 │   ├── src/main.py
 │   └── storage/            # S3/MinIO integration
-├── edge-device/            # Edge SDK (Python)
-│   ├── context_edge/
-│   │   ├── context_injector.py      # CIM (patent core)
-│   │   ├── qr_decoder.py            # Vision
-│   │   ├── opcua_protocol.py        # OPC UA client
-│   │   ├── modbus_protocol.py       # Modbus TCP client
-│   │   ├── ethernetip_protocol.py   # EtherNet/IP client (Allen-Bradley)
-│   │   ├── profinet_protocol.py     # PROFINET/S7 client (Siemens)
-│   │   ├── modbus_rtu_protocol.py   # Modbus RTU client (Serial)
-│   │   └── ldo_generator.py         # Output
-│   └── setup.py
+├── edge-device/            # Edge device platform (Raspberry Pi/Jetson)
+│   ├── edge_app/
+│   │   ├── inputs/
+│   │   │   ├── camera_stream.py    # ✅ Camera + QR decode
+│   │   │   ├── rfid_reader.py      # ⚠️ RFID reader (placeholder)
+│   │   │   └── barcode_scanner.py  # ⚠️ Barcode scanner (placeholder)
+│   │   └── main.py                 # Orchestrates input → send CID
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── README.md
+├── edge-server/            # Edge server (Plant server - Docker Compose)
+│   ├── app/
+│   │   ├── protocols/              # PLC communication
+│   │   │   ├── modbus_protocol.py  # ✅ Modbus TCP
+│   │   │   └── opcua_protocol.py   # ✅ OPC UA
+│   │   ├── services/
+│   │   │   ├── context_lookup.py   # ✅ Redis context fetching
+│   │   │   ├── fusion.py           # ✅ CIM fusion + AI inference
+│   │   │   └── ldo_generator.py    # ✅ LDO creation and storage
+│   │   └── main.py                 # FastAPI app (receives CID)
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── README.md
 ├── ml-training/            # ML Training Backend (SEPARATE - runs monthly)
 │   ├── train.py            # PyTorch training pipeline
 │   ├── convert.py          # TensorRT conversion
 │   ├── deploy.py           # K8s model deployment
-│   ├── deploy-model.sh     # 🆕 Simple deployment script (1-50 devices)
+│   ├── deploy-model.sh     # Simple deployment script (1-50 devices)
 │   ├── Dockerfile          # GPU training container
 │   ├── requirements.txt    # PyTorch, TensorRT, etc.
 │   ├── test-container.sh   # Container validation
@@ -686,14 +698,16 @@ Context-Edge/
 │   │   │   └── feedback/page.tsx           # Retraining queue
 │   └── package.json
 ├── docs/                   # Documentation
-│   ├── deployment-guide-for-manufacturers.md  # 🆕 3 deployment methods + industry examples
-│   ├── mlops-workflow-guide.md                # 🆕 Human-in-the-loop model deployment
-│   ├── in-platform-help-system.md             # 🆕 Role-specific help design
+│   ├── FINAL-ARCHITECTURE.md                  # ✅ Complete architecture overview
+│   ├── ARCHITECTURE-NEW.md                    # ✅ New architecture details
+│   ├── deployment-guide-for-manufacturers.md  # 3 deployment methods + industry examples
+│   ├── mlops-workflow-guide.md                # Human-in-the-loop model deployment
+│   ├── in-platform-help-system.md             # Role-specific help design
 │   ├── ml-architecture-explained.md           # How ML training works
 │   ├── deployment-progression-guide.md        # Laptop → Pilot → Production
 │   ├── industrial-protocol-setup.md           # OPC UA, Modbus, EtherNet/IP
 │   ├── patent-summary.md                      # CIM patent details
-│   └── api-docs.md                           # REST API reference
+│   └── api-docs.md                            # REST API reference
 ├── k8s/                    # Kubernetes/K3s manifests
 │   ├── postgres-statefulset.yaml
 │   ├── redis-deployment.yaml
@@ -704,7 +718,11 @@ Context-Edge/
 ├── demo/                   # Sample data
 │   ├── populate_demo_data.py
 │   └── sample_metadata.csv
-├── docker-compose.yml      # Local development
+├── testing/                # Testing utilities
+│   └── mock-data/
+│       ├── generate-mock-ldos.py      # Mock LDO generator
+│       └── seed-mock-database.sql     # Database seed data
+├── docker-compose.yml      # Local development (includes edge-server)
 └── README.md
 ```
 

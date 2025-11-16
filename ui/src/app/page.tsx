@@ -102,7 +102,7 @@ export default function Home() {
                 Context Edge
               </h1>
               <p className="text-xl text-blue-100">
-                Zero-Effort ML Training Data from Your Production Lines
+                Ground-Truth Injection at the Edge—Zero-Effort ML Training Data
               </p>
             </div>
             <div className="flex gap-3">

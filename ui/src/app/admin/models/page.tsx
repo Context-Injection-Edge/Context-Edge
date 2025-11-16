@@ -159,6 +159,19 @@ export default function ModelsPage() {
     }
   };
 
+  const fetchPilotMetrics = async (versionId: string) => {
+    try {
+      const response = await fetch(`${API_BASE}/mlops/pilot/${versionId}/metrics`);
+      const data = await response.json();
+      setPilotMetrics(data);
+    } catch (error) {
+      console.error('Error fetching pilot metrics:', error);
+    }
+  };
+
+  // Combine pending and deployed models
+  const models = [...pendingModels, ...deployedModels];
+
   const deployModel = async (modelVersion: string, deviceIds: string[]) => {
     setDeploying(modelVersion);
     try {
@@ -167,10 +180,16 @@ export default function ModelsPage() {
 
       // Simulate deployment delay
       setTimeout(() => {
-        // Update model status
-        setModels(models.map(model =>
+        // Update model status in both pending and deployed lists
+        setPendingModels(pendingModels.map(model =>
           model.version_id === modelVersion
-            ? { ...model, status: 'deployed' as const, deployed_devices: [...new Set([...model.deployed_devices, ...deviceIds])] }
+            ? { ...model, status: 'deployed' as const, deployed_devices: [...new Set([...(model.deployed_devices || []), ...deviceIds])] }
+            : model
+        ));
+
+        setDeployedModels(deployedModels.map(model =>
+          model.version_id === modelVersion
+            ? { ...model, status: 'deployed' as const, deployed_devices: [...new Set([...(model.deployed_devices || []), ...deviceIds])] }
             : model
         ));
 
@@ -255,7 +274,7 @@ export default function ModelsPage() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-900">
-                        Deployed to {model.deployed_devices.length} device(s)
+                        Deployed to {(model.deployed_devices || []).length} device(s)
                       </span>
                       <button
                         onClick={() => deployModel(model.version_id, devices.filter(d => d.status === 'online').map(d => d.device_id))}
@@ -296,7 +315,7 @@ export default function ModelsPage() {
                       <div className="flex justify-between">
                         <span className="text-gray-900">Last Seen:</span>
                         <span className={getStatusColor(device.status)}>
-                          {new Date(device.last_seen).toLocaleString()}
+                          {device.last_seen ? new Date(device.last_seen).toLocaleString() : 'Never'}
                         </span>
                       </div>
                     </div>

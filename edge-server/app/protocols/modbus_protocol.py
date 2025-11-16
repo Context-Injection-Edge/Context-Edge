@@ -3,6 +3,10 @@
 from pymodbus.client import ModbusTcpClient
 from typing import Dict, Any, Optional
 import time
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class ModbusProtocol:
     def __init__(self, host: str, port: int = 502, register_mappings: Dict[str, Dict[str, Any]], max_retries: int = 3):
@@ -31,19 +35,19 @@ class ModbusProtocol:
             try:
                 self.client = ModbusTcpClient(self.host, port=self.port)
                 if self.client.connect():
-                    print(f"Connected to Modbus server: {self.host}:{self.port}")
+                    logger.info(f"✅ Connected to Modbus server: {self.host}:{self.port}")
                     return True
                 else:
-                    print(f"Connection attempt {attempt + 1}/{self.max_retries} failed")
+                    logger.warning(f"⚠️  Connection attempt {attempt + 1}/{self.max_retries} failed")
                     self.client = None
             except Exception as e:
-                print(f"Connection attempt {attempt + 1}/{self.max_retries} error: {e}")
+                logger.error(f"❌ Connection attempt {attempt + 1}/{self.max_retries} error: {e}")
                 self.client = None
 
             if attempt < self.max_retries - 1:
                 time.sleep(2 ** attempt)  # Exponential backoff
 
-        print(f"Failed to connect to Modbus server after {self.max_retries} attempts")
+        logger.error(f"❌ Failed to connect to Modbus server after {self.max_retries} attempts")
         return False
 
     def disconnect(self):
@@ -77,7 +81,7 @@ class ModbusProtocol:
                     continue
 
                 if result.isError():
-                    print(f"Error reading {sensor_name}: {result}")
+                    logger.error(f"❌ Error reading {sensor_name}: {result}")
                     continue
 
                 # Convert to float if needed (assuming 16-bit registers)
@@ -94,7 +98,7 @@ class ModbusProtocol:
                 data[sensor_name] = value
 
         except Exception as e:
-            print(f"Error reading Modbus data: {e}")
+            logger.error(f"❌ Error reading Modbus data: {e}")
             # Try to reconnect on next call
             self.disconnect()
 

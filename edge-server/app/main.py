@@ -5,6 +5,7 @@ Receives CID from camera devices and orchestrates the fusion process
 """
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, Dict, Any
@@ -32,6 +33,15 @@ app = FastAPI(
     title="Context Edge - Edge Server",
     description="Receives CID from cameras, performs fusion, generates LDOs",
     version="0.1.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allow your UI's origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialize services

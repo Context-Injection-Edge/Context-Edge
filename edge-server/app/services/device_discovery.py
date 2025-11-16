@@ -7,8 +7,11 @@ import asyncio
 import socket
 import logging
 import ipaddress
+import os # Import os
 from typing import List, Dict, Any, Optional
 from datetime import datetime
+
+from mock_data.mock_discovery_data import MOCK_DISCOVERED_DEVICES, MOCK_TEST_CONNECTION_RESULTS # Import mock data
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +28,7 @@ class DeviceDiscoveryService:
 
     def __init__(self):
         self.timeout = 2  # Connection timeout in seconds
+        self.use_mock_discovery = os.getenv("USE_MOCK_DISCOVERY", "false").lower() == "true" # New mock flag
 
     async def scan_network(
         self,
@@ -43,6 +47,10 @@ class DeviceDiscoveryService:
             List of discovered devices with metadata
         """
         logger.info(f"🔍 Starting network scan: {subnet}")
+
+        if self.use_mock_discovery:
+            logger.info("⚠️  Using MOCK device discovery data")
+            return MOCK_DISCOVERED_DEVICES
 
         if protocols is None:
             protocols = ["modbus", "opcua", "http"]
@@ -325,6 +333,10 @@ class DeviceDiscoveryService:
         Returns:
             Test result with live data if successful
         """
+        if self.use_mock_discovery:
+            logger.info("⚠️  Using MOCK test connection data")
+            return MOCK_TEST_CONNECTION_RESULTS
+
         protocol = device.get("protocol")
 
         if protocol == "modbus_tcp":

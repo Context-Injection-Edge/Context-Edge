@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -35,16 +36,16 @@ function TrafficLight({ status, size = 'md' }: { status: 'healthy' | 'degraded' 
   };
 
   const colors = {
-    healthy: 'bg-green-500 shadow-green-500/50',
-    degraded: 'bg-yellow-500 shadow-yellow-500/50',
-    failed: 'bg-red-500 shadow-red-500/50',
-    unknown: 'bg-gray-400 shadow-gray-400/50'
+    healthy: 'bg-green-500 shadow-green-400/50',
+    degraded: 'bg-yellow-500 shadow-yellow-400/50',
+    failed: 'bg-red-500 shadow-red-400/50',
+    unknown: 'bg-gray-500 shadow-gray-400/50'
   };
 
   return (
     <div className="relative">
       {/* Glow effect */}
-      <div className={`absolute inset-0 ${sizes[size]} rounded-full ${colors[status]} animate-pulse opacity-30 blur-md`} />
+      <div className={`absolute inset-0 ${sizes[size]} rounded-full ${colors[status]} animate-pulse opacity-50 blur-md`} />
       {/* Main light */}
       <div className={`relative ${sizes[size]} rounded-full ${colors[status]} shadow-lg`} />
     </div>
@@ -53,26 +54,26 @@ function TrafficLight({ status, size = 'md' }: { status: 'healthy' | 'degraded' 
 
 function HealthMeter({ percentage, label }: { percentage: number, label: string }) {
   let color = 'bg-green-500';
-  let textColor = 'text-green-700';
-  let bgColor = 'bg-green-100';
+  let textColor = 'text-green-300';
+  let bgColor = 'bg-gray-700';
 
   if (percentage < 50) {
     color = 'bg-red-500';
-    textColor = 'text-red-700';
-    bgColor = 'bg-red-100';
+    textColor = 'text-red-300';
+    bgColor = 'bg-red-900';
   } else if (percentage < 80) {
     color = 'bg-yellow-500';
-    textColor = 'text-yellow-700';
-    bgColor = 'bg-yellow-100';
+    textColor = 'text-yellow-300';
+    bgColor = 'bg-yellow-900';
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="text-sm font-medium text-gray-300">{label}</span>
         <span className={`text-sm font-bold ${textColor}`}>{percentage.toFixed(1)}%</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+      <div className={`w-full ${bgColor} rounded-full h-3 overflow-hidden`}>
         <div
           className={`h-full ${color} transition-all duration-500 ease-out`}
           style={{ width: `${percentage}%` }}
@@ -105,7 +106,7 @@ function ResponseTimeChart({ responseTime }: { responseTime: number }) {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <TrafficLight status={status} size="sm" />
-        <span className="text-sm font-medium">{responseTime}ms - {message}</span>
+        <span className="text-sm font-medium text-gray-300">{responseTime}ms - {message}</span>
       </div>
       <div className="flex gap-2">
         {bars.map((bar, idx) => (
@@ -119,7 +120,7 @@ function ResponseTimeChart({ responseTime }: { responseTime: number }) {
                   : 'bg-red-500'
               }`}
             />
-            <div className="text-xs text-center text-gray-600 mt-1">{bar.label}</div>
+            <div className="text-xs text-center text-gray-400 mt-1">{bar.label}</div>
           </div>
         ))}
       </div>
@@ -176,49 +177,47 @@ export default function HealthDashboard() {
   const overallHealth = stats.total === 0 ? 0 : (stats.healthy / stats.total) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              System Health Monitor
-            </h1>
-            <p className="text-gray-600">
-              Real-time connection status and performance metrics
-            </p>
-          </div>
-
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Last updated</div>
-            <div className="text-lg font-mono font-bold text-gray-900">
-              {lastUpdate.toLocaleTimeString()}
-            </div>
-            <div className="flex items-center gap-2 justify-end mt-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm text-green-600">Live</span>
-            </div>
-          </div>
+    <div className="max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-white mb-2">
+            System Health Monitor
+          </h1>
+          <p className="text-gray-400">
+            Real-time connection status and performance metrics
+          </p>
         </div>
 
-        {/* Overall Health Card */}
-        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-2xl p-8 mb-8 text-white">
-          <div className="grid grid-cols-2 gap-8">
-            {/* Left side - Traffic light */}
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                {/* Traffic light box */}
-                <div className="bg-gray-900 rounded-2xl p-6 shadow-2xl">
-                  <div className="space-y-4">
-                    <div className={`transition-opacity ${stats.failed > 0 ? 'opacity-100' : 'opacity-30'}`}>
-                      <TrafficLight status="failed" size="lg" />
-                    </div>
-                    <div className={`transition-opacity ${stats.degraded > 0 ? 'opacity-100' : 'opacity-30'}`}>
-                      <TrafficLight status="degraded" size="lg" />
-                    </div>
-                    <div className={`transition-opacity ${stats.healthy > 0 ? 'opacity-100' : 'opacity-30'}`}>
-                      <TrafficLight status="healthy" size="lg" />
-                    </div>
+        <div className="text-right">
+          <div className="text-sm text-gray-400">Last updated</div>
+          <div className="text-lg font-mono font-bold text-white">
+            {lastUpdate.toLocaleTimeString()}
+          </div>
+          <div className="flex items-center gap-2 justify-end mt-1">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <span className="text-sm text-green-400">Live</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Overall Health Card */}
+      <div className="bg-gradient-to-br from-gray-900 to-black rounded-xl shadow-2xl p-8 mb-8 text-white border border-gray-700">
+        <div className="grid grid-cols-2 gap-8">
+          {/* Left side - Traffic light */}
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              {/* Traffic light box */}
+              <div className="bg-gray-900/50 rounded-2xl p-6 shadow-2xl border border-gray-700">
+                <div className="space-y-4">
+                  <div className={`transition-opacity ${stats.failed > 0 ? 'opacity-100' : 'opacity-30'}`}>
+                    <TrafficLight status="failed" size="lg" />
+                  </div>
+                  <div className={`transition-opacity ${stats.degraded > 0 ? 'opacity-100' : 'opacity-30'}`}>
+                    <TrafficLight status="degraded" size="lg" />
+                  </div>
+                  <div className={`transition-opacity ${stats.healthy > 0 ? 'opacity-100' : 'opacity-30'}`}>
+                    <TrafficLight status="healthy" size="lg" />
                   </div>
                 </div>
               </div>
@@ -238,7 +237,7 @@ export default function HealthDashboard() {
 
             {/* Right side - Stats */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
                 <div className="flex items-center gap-2 mb-2">
                   <TrafficLight status="healthy" size="sm" />
                   <span className="text-sm opacity-75">Healthy</span>
@@ -246,7 +245,7 @@ export default function HealthDashboard() {
                 <div className="text-4xl font-bold">{stats.healthy}</div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
                 <div className="flex items-center gap-2 mb-2">
                   <TrafficLight status="degraded" size="sm" />
                   <span className="text-sm opacity-75">Degraded</span>
@@ -254,7 +253,7 @@ export default function HealthDashboard() {
                 <div className="text-4xl font-bold">{stats.degraded}</div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
                 <div className="flex items-center gap-2 mb-2">
                   <TrafficLight status="failed" size="sm" />
                   <span className="text-sm opacity-75">Failed</span>
@@ -262,7 +261,7 @@ export default function HealthDashboard() {
                 <div className="text-4xl font-bold">{stats.failed}</div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 border border-gray-700">
                 <div className="text-sm opacity-75 mb-2">Avg Response</div>
                 <div className="text-4xl font-bold">
                   {stats.avgResponseTime.toFixed(0)}
@@ -275,65 +274,65 @@ export default function HealthDashboard() {
 
         {/* Performance Metrics */}
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold mb-4">Average Success Rate</h3>
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+            <h3 className="text-xl font-bold mb-4 text-white">Average Success Rate</h3>
             <HealthMeter percentage={stats.avgSuccessRate} label="Connection Success Rate" />
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold mb-4">System Uptime</h3>
+          <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+            <h3 className="text-xl font-bold mb-4 text-white">System Uptime</h3>
             <HealthMeter percentage={overallHealth} label="Devices Online" />
           </div>
         </div>
 
         {/* Individual Device Health */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-6">Device Health Details</h2>
+        <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+          <h2 className="text-2xl font-bold mb-6 text-white">Device Health Details</h2>
 
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-gray-600">Loading health data...</p>
+              <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-gray-400">Loading health data...</p>
             </div>
           ) : healthData.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📊</div>
-              <p className="text-gray-600">No devices to monitor</p>
+              <p className="text-gray-400">No devices to monitor</p>
             </div>
           ) : (
             <div className="space-y-4">
               {healthData.map((device) => (
                 <div
                   key={device.config_id}
-                  className={`rounded-lg p-6 transition-all ${
+                  className={`rounded-lg p-6 transition-all border ${
                     !device.enabled
-                      ? 'bg-gray-50 border border-gray-200'
+                      ? 'bg-gray-800 border-gray-700'
                       : device.status === 'healthy'
-                      ? 'bg-green-50 border-2 border-green-300'
+                      ? 'bg-green-900/50 border-green-700'
                       : device.status === 'degraded'
-                      ? 'bg-yellow-50 border-2 border-yellow-300'
+                      ? 'bg-yellow-900/50 border-yellow-700'
                       : device.status === 'failed'
-                      ? 'bg-red-50 border-2 border-red-300'
-                      : 'bg-gray-50 border border-gray-200'
+                      ? 'bg-red-900/50 border-red-700'
+                      : 'bg-gray-800 border-gray-700'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-4">
                       <TrafficLight status={device.enabled ? device.status : 'unknown'} size="md" />
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">{device.name}</h3>
-                        <p className="text-sm text-gray-600">
+                        <h3 className="text-xl font-bold text-white">{device.name}</h3>
+                        <p className="text-sm text-gray-400">
                           {device.host}:{device.port} • {device.protocol.toUpperCase()}
                         </p>
                       </div>
                     </div>
 
-                    <div className={`px-4 py-2 rounded-full font-bold ${
+                    <div className={`px-4 py-2 rounded-full font-bold text-sm ${
                       device.enabled
                         ? device.is_connected
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-600'
+                          ? 'bg-green-800 text-green-200'
+                          : 'bg-red-800 text-red-200'
+                        : 'bg-gray-700 text-gray-300'
                     }`}>
                       {device.enabled
                         ? device.is_connected ? 'CONNECTED' : 'DISCONNECTED'
@@ -359,18 +358,18 @@ export default function HealthDashboard() {
 
                       {/* Error Count */}
                       <div>
-                        <div className="text-sm font-medium text-gray-700 mb-2">Error Count</div>
+                        <div className="text-sm font-medium text-gray-300 mb-2">Error Count</div>
                         <div className={`text-4xl font-bold ${
                           device.error_count === 0
-                            ? 'text-green-600'
+                            ? 'text-green-400'
                             : device.error_count < 5
-                            ? 'text-yellow-600'
-                            : 'text-red-600'
+                            ? 'text-yellow-400'
+                            : 'text-red-400'
                         }`}>
                           {device.error_count || 0}
                         </div>
                         {device.last_error && (
-                          <div className="mt-2 text-xs text-red-600 truncate">
+                          <div className="mt-2 text-xs text-red-400 truncate">
                             {device.last_error}
                           </div>
                         )}

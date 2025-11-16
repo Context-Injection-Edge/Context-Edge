@@ -1,8 +1,8 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-pydantic==2.5.0
+pydantic
 redis==5.0.1
-psycopg2-binary==2.9.9
+psycopg2-binary
 pymodbus==3.5.4
 opcua==0.98.13
 python-dotenv==1.0.0

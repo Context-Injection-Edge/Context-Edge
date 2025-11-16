@@ -64,6 +64,7 @@ services:
       POSTGRES_USER: context_user
       POSTGRES_PASSWORD: context_pass
       USE_MOCK_SENSORS: "true"
+      USE_MOCK_DISCOVERY: "true"
       # Optional: Configure real PLC connections
       # MODBUS_HOST: 192.168.1.10
       # MODBUS_PORT: 502
@@ -75,6 +76,7 @@ services:
         condition: service_started
     volumes:
       - ./edge-server:/app:Z
+      - ./testing/mock-data:/app/mock_data:Z
 
 volumes:
   postgres_data:

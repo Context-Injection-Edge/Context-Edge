@@ -12,22 +12,6 @@ BEGIN;
 -- 1. CREATE ADDITIONAL TABLES (if they don't exist)
 -- ============================================================================
 
--- Edge Devices Table
-CREATE TABLE IF NOT EXISTS edge_devices (
-    id SERIAL PRIMARY KEY,
-    device_id VARCHAR(100) UNIQUE NOT NULL,
-    name VARCHAR(200) NOT NULL,
-    protocol VARCHAR(50) NOT NULL,
-    location VARCHAR(200),
-    plc_type VARCHAR(100),
-    current_model_version VARCHAR(50),
-    status VARCHAR(20) DEFAULT 'online',
-    last_seen TIMESTAMP DEFAULT NOW(),
-    is_mock BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
 -- AI Models Table
 CREATE TABLE IF NOT EXISTS ai_models (
     id SERIAL PRIMARY KEY,

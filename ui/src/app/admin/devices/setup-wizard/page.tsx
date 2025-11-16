@@ -451,7 +451,7 @@ export default function DeviceSetupWizard() {
                               <div className="font-semibold capitalize">
                                 {sensorName.replace(/_/g, ' ')}
                               </div>
-                              <div className="text-sm text-gray-600">
+                              <div className="text-sm text-gray-900">
                                 {sensor.unit && `Unit: ${sensor.unit}`}
                                 {sensor.address && ` • Reg: ${sensor.address}`}
                                 {sensor.node_id && ` • Node: ${sensor.node_id}`}
@@ -477,7 +477,7 @@ export default function DeviceSetupWizard() {
                     Selected Sensors ({Object.keys(sensorMappings).length})
                   </h3>
                   {Object.keys(sensorMappings).length === 0 ? (
-                    <div className="text-gray-500 italic">
+                    <div className="text-gray-900 italic">
                       Click sensors on the left to select them
                     </div>
                   ) : (
@@ -485,7 +485,7 @@ export default function DeviceSetupWizard() {
                       {Object.entries(sensorMappings).map(([name, config]: [string, any]) => (
                         <div key={name} className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                           <div className="font-semibold capitalize">{name.replace(/_/g, ' ')}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-gray-900">
                             {config.unit && `${config.unit}`}
                             {config.scale && ` • Scale: 1/${config.scale}`}
                           </div>

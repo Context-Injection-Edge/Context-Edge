@@ -22,9 +22,11 @@ from app.adapters import (
     WonderwareMESAdapter,
     SAPAdapter,
     IgnitionAdapter,
-    OSIsoftPIAdapter
+    OSIsoftPIAdapter,
+    MockDataSourceAdapter # Import MockDataSourceAdapter
 )
 from app.services.recommendation_service import RecommendationService
+from mock_data.mock_adapter_configs import MOCK_ADAPTER_CONFIGS # Import mock configs
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +63,18 @@ class FusionService:
         logger.info("🔧 Initializing multi-source data adapters...")
 
         if self.use_mock_data:
-            logger.info("⚠️  Using MOCK sensor data (set USE_MOCK_SENSORS=false for real sources)")
+            logger.info("⚠️  Using MOCK sensor data from mock_adapter_configs.py")
+            for mock_config in MOCK_ADAPTER_CONFIGS:
+                adapter_type = mock_config["adapter_type"]
+                source_name = mock_config["source_name"]
+                config = mock_config["config"]
+                mock_data = mock_config["mock_data"]
+
+                # Create a MockDataSourceAdapter instance
+                mock_adapter = MockDataSourceAdapter(source_name, {**config, "mock_data": mock_data})
+                if await mock_adapter.connect():
+                    self.data_sources[adapter_type] = mock_adapter
+                    logger.info(f"✅ Mock {adapter_type} adapter registered: {source_name}")
             return
 
         # =====================================================
@@ -221,12 +234,9 @@ class FusionService:
         Returns:
             Combined data from all sources
         """
-        if self.use_mock_data:
-            return self._generate_mock_sensor_data()
-
         if not self.data_sources:
-            logger.warning("⚠️  No data sources configured, using mock data")
-            return self._generate_mock_sensor_data()
+            logger.warning("⚠️  No data sources configured, returning empty data")
+            return {}
 
         # Read from all data sources in parallel
         logger.info(f"📡 Reading from {len(self.data_sources)} data sources in parallel...")
@@ -281,29 +291,7 @@ class FusionService:
         logger.info(f"✅ Multi-source read complete: {list(combined_data.keys())}")
         return combined_data
 
-    def _generate_mock_sensor_data(self) -> Dict[str, Any]:
-        """Generate realistic mock multi-source data for testing"""
-        return {
-            "plc": {
-                "temperature": round(random.gauss(72.0, 8.0), 2),
-                "vibration": round(random.gauss(2.5, 0.8), 2),
-                "pressure": round(random.gauss(100.0, 5.0), 2),
-                "humidity": round(random.gauss(45.0, 10.0), 2),
-                "cycle_time": round(random.gauss(20.0, 3.0), 2),
-                "timestamp": datetime.now().isoformat()
-            },
-            "mes": {
-                "work_order": f"WO-{random.randint(10000, 99999)}",
-                "production_count": random.randint(50, 200),
-                "oee": round(random.uniform(0.75, 0.95), 2),
-                "timestamp": datetime.now().isoformat()
-            },
-            "erp": {
-                "material_number": f"MAT-{random.randint(1000, 9999)}",
-                "batch_number": f"BATCH-{random.randint(100, 999)}",
-                "timestamp": datetime.now().isoformat()
-            }
-        }
+
 
     async def fuse_data(
         self,

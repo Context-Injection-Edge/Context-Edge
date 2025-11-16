@@ -37,7 +37,8 @@ class LDOGeneratorService:
         self,
         cid: str,
         fused_data: Dict[str, Any],
-        prediction: Dict[str, Any]
+        prediction: Dict[str, Any],
+        video_storage_id: Optional[str] = None
     ) -> str:
         """
         Create and store Labeled Data Object
@@ -60,10 +61,12 @@ class LDOGeneratorService:
             conn = self._get_connection()
             cur = conn.cursor()
 
-            # Insert into metadata_payloads (context + sensor data)
+            # Insert into metadata_payloads (context + sensor data + video reference)
             payload_data = {
                 "context": fused_data["context"],
                 "sensor_data": fused_data["sensor_data"],
+                "video_storage_id": video_storage_id,
+                "video_file": fused_data.get("video_file"),
                 "fusion_metadata": {
                     "fusion_timestamp": fused_data["fusion_timestamp"],
                     "fusion_version": fused_data["fusion_version"],

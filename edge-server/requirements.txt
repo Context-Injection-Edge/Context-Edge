@@ -6,3 +6,5 @@ psycopg2-binary==2.9.9
 pymodbus==3.5.4
 opcua==0.98.13
 python-dotenv==1.0.0
+httpx==0.25.2
+python-multipart==0.0.6

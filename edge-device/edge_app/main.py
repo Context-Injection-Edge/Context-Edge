@@ -81,33 +81,53 @@ class EdgeDevice:
         logger.info("")
         self.input_module.start()
 
-    def send_cid(self, cid: str):
+    def send_cid(self, cid: str, video_path: str = None):
         """
-        Send CID to Edge Server
+        Send CID + video to Edge Server
 
         Args:
             cid: Context ID from input module
+            video_path: Path to video clip file (if captured)
         """
-        payload = {
-            "cid": cid,
-            "camera_id": self.device_id,  # Keep as camera_id for backward compatibility
-            "timestamp": datetime.now().isoformat()
-        }
+        timestamp = datetime.now().isoformat()
 
         logger.info(f"📤 Sending CID: {cid}")
+        if video_path:
+            logger.info(f"📹 Sending video: {video_path}")
 
         try:
+            # Prepare multipart form data
+            files = {}
+            if video_path and os.path.exists(video_path):
+                files['video'] = open(video_path, 'rb')
+
+            data = {
+                "cid": cid,
+                "device_id": self.device_id,
+                "timestamp": timestamp
+            }
+
             response = requests.post(
                 self.edge_server_url,
-                json=payload,
-                timeout=2
+                files=files,
+                data=data,
+                timeout=30  # Longer timeout for video upload
             )
+
+            # Close file handle
+            if 'video' in files:
+                files['video'].close()
 
             if response.status_code == 200:
                 result = response.json()
                 ldo_id = result.get('ldo_id', 'unknown')
                 logger.info(f"   ✅ Edge Server accepted: {result.get('status', 'ok')}")
                 logger.info(f"   💾 LDO created: {ldo_id}")
+
+                # Clean up video file after successful upload
+                if video_path and os.path.exists(video_path):
+                    os.remove(video_path)
+                    logger.info(f"   🗑️  Video file cleaned up")
             else:
                 logger.error(f"   ❌ Error: HTTP {response.status_code}")
                 logger.error(f"      {response.text}")

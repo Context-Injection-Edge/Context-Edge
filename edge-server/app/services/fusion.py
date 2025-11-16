@@ -131,7 +131,8 @@ class FusionService:
         context: Dict[str, Any],
         sensor_data: Dict[str, float],
         camera_id: str,
-        timestamp: str
+        timestamp: str,
+        video_file: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         CONTEXT INJECTION MODULE (CIM) - PATENTED
@@ -163,6 +164,9 @@ class FusionService:
 
             # Sensor data from PLC (how the part was MADE)
             "sensor_data": sensor_data,
+
+            # Video evidence (visual data)
+            "video_file": video_file,
 
             # Combined signature (unique to this exact production event)
             "fusion_timestamp": datetime.now().isoformat(),

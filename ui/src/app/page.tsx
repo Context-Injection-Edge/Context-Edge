@@ -316,95 +316,37 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Equipment Compatibility */}
-      <section className="py-16 bg-white border-t border-gray-200">
+      {/* Equipment Compatibility - Compact Banner */}
+      <section className="py-8 bg-gradient-to-r from-green-50 to-blue-50 border-y border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold mb-4">
-              ✓ Works with Your Existing Equipment
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Seamless Integration with Factory Floor Systems
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Context Edge connects to your existing PLCs and sensors—no rip-and-replace required.
-              We speak your equipment's language, covering 85%+ of industrial automation systems.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            {/* OPC UA */}
-            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
-              <div className="text-3xl mb-2">🔌</div>
-              <h4 className="font-bold text-gray-900 mb-2">OPC UA</h4>
-              <p className="text-sm text-gray-600">Siemens, ABB, B&R</p>
-              <p className="text-xs text-green-600 mt-2">✅ Port 4840</p>
-            </div>
-
-            {/* EtherNet/IP */}
-            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
-              <div className="text-3xl mb-2">⚡</div>
-              <h4 className="font-bold text-gray-900 mb-2">EtherNet/IP</h4>
-              <p className="text-sm text-gray-600">Allen-Bradley</p>
-              <p className="text-xs text-green-600 mt-2">✅ Port 44818</p>
-            </div>
-
-            {/* PROFINET/S7 */}
-            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
-              <div className="text-3xl mb-2">🏭</div>
-              <h4 className="font-bold text-gray-900 mb-2">PROFINET/S7</h4>
-              <p className="text-sm text-gray-600">Siemens S7-300/400/1200/1500</p>
-              <p className="text-xs text-green-600 mt-2">✅ Port 102</p>
-            </div>
-
-            {/* Modbus TCP */}
-            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
-              <div className="text-3xl mb-2">📡</div>
-              <h4 className="font-bold text-gray-900 mb-2">Modbus TCP</h4>
-              <p className="text-sm text-gray-600">Schneider, Emerson</p>
-              <p className="text-xs text-green-600 mt-2">✅ Port 502</p>
-            </div>
-
-            {/* Modbus RTU */}
-            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
-              <div className="text-3xl mb-2">🔌</div>
-              <h4 className="font-bold text-gray-900 mb-2">Modbus RTU</h4>
-              <p className="text-sm text-gray-600">Legacy Serial</p>
-              <p className="text-xs text-green-600 mt-2">✅ RS-232/485</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-6 shadow-xl">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
-              PLC Brand Compatibility
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">🇺🇸 North America</h4>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li>✅ Allen-Bradley (EtherNet/IP)</li>
-                  <li>✅ Rockwell Automation</li>
-                  <li>✅ Emerson (Modbus TCP)</li>
-                </ul>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Left: Headline */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-xl">
+                ✓
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">🇪🇺 Europe</h4>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li>✅ Siemens (OPC UA, PROFINET)</li>
-                  <li>✅ ABB (OPC UA)</li>
-                  <li>✅ B&R (OPC UA)</li>
-                  <li>✅ Schneider (Modbus, OPC UA)</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">🏭 Legacy</h4>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li>✅ Any pre-2000 PLC (Modbus RTU)</li>
-                  <li>✅ Serial RS-232/RS-485 devices</li>
-                  <li>✅ Brownfield automation</li>
-                </ul>
+                <h3 className="text-lg font-bold text-gray-900">Works with Your Existing Equipment</h3>
+                <p className="text-sm text-gray-600">85%+ industrial automation coverage • No rip-and-replace</p>
               </div>
             </div>
+
+            {/* Center: Protocol List */}
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">OPC UA</span>
+              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">Modbus TCP</span>
+              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">EtherNet/IP</span>
+              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">PROFINET</span>
+              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">Modbus RTU</span>
+            </div>
+
+            {/* Right: Link */}
+            <a
+              href="/downloads"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium whitespace-nowrap"
+            >
+              View Integration Guide →
+            </a>
           </div>
         </div>
       </section>
@@ -515,7 +457,7 @@ export default function Home() {
           </div>
 
           {/* Collapsible Technical Diagram */}
-          <details className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <details className="bg-gray-50 rounded-lg p-6 border border-gray-200" suppressHydrationWarning>
             <summary className="cursor-pointer text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
               📐 View Detailed Patent Architecture Diagram
             </summary>

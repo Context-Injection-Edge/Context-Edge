@@ -189,55 +189,69 @@ export default function Home() {
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
               <h3 className="text-2xl font-bold mb-6 text-yellow-300 text-center">How CIM Fusion Works</h3>
 
-              {/* Multiple Inputs */}
-              <div className="mb-6 text-center">
-                <div className="text-sm text-blue-200 mb-2">STEP 1: Multiple Context Sources</div>
+              {/* Step 1: Context Identifiers */}
+              <div className="mb-4 text-center">
+                <div className="text-sm text-blue-200 mb-2">STEP 1: Scan Context Identifier</div>
                 <div className="flex flex-wrap gap-2 mb-1 justify-center">
-                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">QR Codes</span>
-                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">RFID Tags</span>
-                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">OCR Text</span>
-                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">Barcodes</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">QR Code</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">RFID Tag</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">Barcode</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">OCR</span>
                   <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">NFC</span>
                 </div>
+                <div className="text-xs text-blue-100 mt-2">Triggers system and provides product/asset ID</div>
               </div>
 
-              <div className="text-center text-3xl text-yellow-300 mb-4">+</div>
+              <div className="text-center text-2xl text-yellow-300 mb-3">↓</div>
 
-              {/* Real-Time Streams */}
-              <div className="mb-6 text-center">
-                <div className="text-sm text-blue-200 mb-2">STEP 2: Real-Time Data Streams</div>
-                <div className="flex flex-wrap gap-2 mb-1 justify-center">
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Video Feeds</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">PLC Data</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">SCADA Systems</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">IoT Sensors</span>
-                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Industrial Networks</span>
+              {/* Step 2: Fetch Data */}
+              <div className="mb-4 text-center">
+                <div className="text-sm text-blue-200 mb-2">STEP 2: Fetch Data from Multiple Sources</div>
+                <div className="space-y-2">
+                  <div>
+                    <div className="text-xs text-blue-100 mb-1">Metadata Payloads:</div>
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">Context DB</span>
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">PLM/ERP</span>
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">Cloud APIs</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-blue-100 mb-1">Real-Time Streams:</div>
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">Video</span>
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">PLC Sensors</span>
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">SCADA</span>
+                      <span className="px-2 py-1 bg-purple-500/50 rounded-full text-xs text-white">IoT</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="text-center text-3xl text-yellow-300 mb-4">↓</div>
+              <div className="text-center text-2xl text-yellow-300 mb-3">↓</div>
 
-              {/* CIM Processing */}
-              <div className="bg-yellow-400/20 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+              {/* Step 3: CIM Fusion */}
+              <div className="bg-yellow-400/20 border-2 border-yellow-400 rounded-lg p-4 mb-3">
                 <div className="flex items-center justify-center mb-2">
                   <div className="text-3xl mr-3">⚡</div>
-                  <div className="font-bold text-yellow-300 text-lg">EDGE AI</div>
+                  <div className="font-bold text-yellow-300 text-lg">EDGE AI FUSION</div>
                 </div>
                 <div className="text-center text-white font-semibold mb-1">Context Injection Module (CIM)</div>
-                <div className="text-center text-xs text-blue-200">Patented Synchronous Fusion</div>
-                <div className="text-center text-xs text-blue-100 mt-2">Processes locally • Sub-100ms • No cloud needed</div>
+                <div className="text-center text-xs text-blue-200 mb-1">Patented Synchronous Data Fusion</div>
+                <div className="text-center text-xs text-blue-100">Fuses: ID + Metadata + Sensor Data + Video</div>
+                <div className="text-center text-xs text-blue-100 mt-1">Runs AI inference • Sub-100ms • Works air-gapped</div>
               </div>
 
-              <div className="text-center text-3xl text-green-400 mb-4">↓</div>
+              <div className="text-center text-2xl text-green-400 mb-3">↓</div>
 
-              {/* Output */}
+              {/* Step 4: Output */}
               <div className="bg-green-500/20 border-2 border-green-400 rounded-lg p-4">
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center mb-2">
                   <div className="text-2xl mr-2">✓</div>
                   <div className="font-bold text-white">Labeled Data Objects (LDOs)</div>
                 </div>
-                <div className="text-center text-xs text-blue-100 mt-2">
-                  Perfect training data • 100% accurate • Zero manual work
+                <div className="text-center text-xs text-blue-100">
+                  Perfect training data • 100% accurate labels • Zero manual work
                 </div>
               </div>
             </div>
@@ -379,8 +393,96 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Platform Use Cases */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">One Platform, Multiple Use Cases</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+              Context Edge is a flexible industrial AI platform serving manufacturers across industries
+            </p>
+          </div>
+
+          {/* Use Case Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Quality Control */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 hover:border-blue-400 transition-all">
+              <div className="text-4xl mb-3">🎯</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Quality Control</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Scan part QR code → AI detects defects in real-time → Creates perfect training data automatically
+              </p>
+              <div className="text-xs text-blue-700 font-medium">Industries: Automotive, Electronics, Medical Devices</div>
+            </div>
+
+            {/* Predictive Maintenance */}
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border-2 border-orange-200 hover:border-orange-400 transition-all">
+              <div className="text-4xl mb-3">⚙️</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Predictive Maintenance</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Equipment RFID tag → Monitor vibration/temp → Alert engineer before failure → Complete incident context
+              </p>
+              <div className="text-xs text-orange-700 font-medium">Industries: Manufacturing, Oil & Gas, Utilities</div>
+            </div>
+
+            {/* Compliance & Traceability */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200 hover:border-green-400 transition-all">
+              <div className="text-4xl mb-3">📋</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Compliance & Traceability</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Batch barcode → Video + sensor documentation → Complete audit trail for FDA/regulatory compliance
+              </p>
+              <div className="text-xs text-green-700 font-medium">Industries: Pharma, Food & Beverage, Aerospace</div>
+            </div>
+
+            {/* Process Optimization */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-200 hover:border-purple-400 transition-all">
+              <div className="text-4xl mb-3">📊</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Process Optimization</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Production order QR → Monitor actual vs expected → Identify bottlenecks → Optimize throughput
+              </p>
+              <div className="text-xs text-purple-700 font-medium">Industries: Chemicals, Semiconductors, Food Processing</div>
+            </div>
+
+            {/* Supply Chain Visibility */}
+            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6 border-2 border-yellow-200 hover:border-yellow-400 transition-all">
+              <div className="text-4xl mb-3">🚚</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Supply Chain & Cold Chain</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Package RFID → Track temp/humidity/GPS → Quality verification → Claims documentation
+              </p>
+              <div className="text-xs text-yellow-700 font-medium">Industries: Pharma, Food, Electronics, Luxury Goods</div>
+            </div>
+
+            {/* Safety & Incidents */}
+            <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-6 border-2 border-red-200 hover:border-red-400 transition-all">
+              <div className="text-4xl mb-3">🛡️</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Safety & Incident Investigation</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Anomaly detected → Pull video + sensor data → Complete event reconstruction → Root cause analysis
+              </p>
+              <div className="text-xs text-red-700 font-medium">Industries: Oil & Gas, Mining, Construction</div>
+            </div>
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="text-center mt-12">
+            <p className="text-lg text-gray-700 mb-6">
+              <strong>One platform.</strong> Multiple applications. Ready to transform your manufacturing operations?
+            </p>
+            <a
+              href="/downloads"
+              className="inline-block px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors text-lg shadow-lg"
+            >
+              Get Started with Context Edge →
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Project Overview */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">About Context Edge</h2>
           <p className="text-lg text-gray-900 leading-relaxed mb-4">

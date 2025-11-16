@@ -253,8 +253,14 @@ docker-compose up -d edge-server
 - API for managing contexts
 - Port: 8000
 
-**Data Ingestion** (Existing)
-- LDO storage and retrieval
+**Data Ingestion** (Optional - Future Use)
+- **Current Status**: Not used in base flow
+- **Future Use Cases**:
+  - Export LDOs from PostgreSQL to S3/MinIO for ML training
+  - Store video clips (if edge devices capture video)
+  - Cloud sync for multi-site deployments
+  - Backup and archival
+- **Current Flow**: Edge server stores LDOs directly in PostgreSQL
 - Port: 8001
 
 **UI** (Web Interface)

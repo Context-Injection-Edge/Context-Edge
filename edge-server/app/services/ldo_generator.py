@@ -7,7 +7,7 @@ import logging
 import os
 import psycopg2
 from psycopg2.extras import Json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)

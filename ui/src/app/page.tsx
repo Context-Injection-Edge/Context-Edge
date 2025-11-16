@@ -428,11 +428,11 @@ export default function Home() {
             <summary className="cursor-pointer text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
               📐 View Detailed Patent Architecture Diagram
             </summary>
-            <div className="mt-6">
+            <div className="mt-6" suppressHydrationWarning>
               <p className="text-gray-900 mb-4">
                 This diagram shows our patented <strong>Context Injection Module (CIM)</strong> - highlighted in gold - which synchronously fuses physical context identifiers with sensor data at the edge. The resulting Labeled Data Objects serve operators (blue), engineers (green), and data scientists (purple).
               </p>
-              <div className="bg-white p-6 rounded-lg border border-gray-300">
+              <div className="bg-white p-6 rounded-lg border border-gray-300" suppressHydrationWarning>
                 <div ref={diagramRef} className="mermaid" suppressHydrationWarning></div>
               </div>
             </div>

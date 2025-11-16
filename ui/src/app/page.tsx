@@ -212,8 +212,7 @@ export default function Home() {
               <h4 className="font-bold text-gray-900 mb-2">Zero Manual Work</h4>
               <p className="text-sm text-gray-700">QR codes provide physical ground truth automatically.</p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform border-2 border-blue-400">
-              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-2">NEW!</div>
+            <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform">
               <div className="text-4xl mb-3">🔌</div>
               <h4 className="font-bold text-gray-900 mb-2">85%+ PLC Coverage</h4>
               <p className="text-sm text-gray-700">OPC UA, Modbus, EtherNet/IP, PROFINET, Modbus RTU</p>
@@ -244,7 +243,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             {/* OPC UA */}
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center">
+            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
               <div className="text-3xl mb-2">🔌</div>
               <h4 className="font-bold text-gray-900 mb-2">OPC UA</h4>
               <p className="text-sm text-gray-600">Siemens, ABB, B&R</p>
@@ -252,8 +251,7 @@ export default function Home() {
             </div>
 
             {/* EtherNet/IP */}
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center border-2 border-blue-400">
-              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-1">NEW!</div>
+            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
               <div className="text-3xl mb-2">⚡</div>
               <h4 className="font-bold text-gray-900 mb-2">EtherNet/IP</h4>
               <p className="text-sm text-gray-600">Allen-Bradley</p>
@@ -261,8 +259,7 @@ export default function Home() {
             </div>
 
             {/* PROFINET/S7 */}
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center border-2 border-blue-400">
-              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-1">NEW!</div>
+            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
               <div className="text-3xl mb-2">🏭</div>
               <h4 className="font-bold text-gray-900 mb-2">PROFINET/S7</h4>
               <p className="text-sm text-gray-600">Siemens S7-300/400/1200/1500</p>
@@ -270,7 +267,7 @@ export default function Home() {
             </div>
 
             {/* Modbus TCP */}
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center">
+            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
               <div className="text-3xl mb-2">📡</div>
               <h4 className="font-bold text-gray-900 mb-2">Modbus TCP</h4>
               <p className="text-sm text-gray-600">Schneider, Emerson</p>
@@ -278,8 +275,7 @@ export default function Home() {
             </div>
 
             {/* Modbus RTU */}
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center border-2 border-blue-400">
-              <div className="inline-block px-2 py-1 bg-blue-100 rounded text-xs font-bold text-blue-800 mb-1">NEW!</div>
+            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg text-center transform hover:scale-105 transition-all duration-200">
               <div className="text-3xl mb-2">🔌</div>
               <h4 className="font-bold text-gray-900 mb-2">Modbus RTU</h4>
               <p className="text-sm text-gray-600">Legacy Serial</p>
@@ -505,11 +501,10 @@ export default function Home() {
                 </li>
               </ul>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-md border-2 border-purple-400">
+            <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
               <div className="flex items-center mb-4">
                 <div className="text-3xl mr-3">🤖</div>
                 <h3 className="text-xl font-bold text-gray-900">MLOps Pipeline</h3>
-                <div className="ml-2 px-2 py-1 bg-purple-100 rounded text-xs font-bold text-purple-800">NEW!</div>
               </div>
               <ul className="text-gray-900 space-y-3">
                 <li className="flex items-start">
@@ -707,7 +702,7 @@ export default function Home() {
               Flexible Deployment for Any Factory Size
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg p-6 shadow-md">
+              <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
                 <div className="text-4xl mb-3 text-center">🖐️</div>
                 <h4 className="font-bold text-gray-900 mb-2 text-center">Manual</h4>
                 <p className="text-sm text-gray-600 text-center mb-3">1-10 devices</p>
@@ -717,7 +712,7 @@ export default function Home() {
                   <li>• Perfect for pilots</li>
                 </ul>
               </div>
-              <div className="bg-white rounded-lg p-6 shadow-md">
+              <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
                 <div className="text-4xl mb-3 text-center">📜</div>
                 <h4 className="font-bold text-gray-900 mb-2 text-center">Script</h4>
                 <p className="text-sm text-gray-600 text-center mb-3">10-50 devices</p>
@@ -727,7 +722,7 @@ export default function Home() {
                   <li>• Rollback support</li>
                 </ul>
               </div>
-              <div className="bg-white rounded-lg p-6 shadow-md border-2 border-blue-400">
+              <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
                 <div className="text-4xl mb-3 text-center">☸️</div>
                 <h4 className="font-bold text-gray-900 mb-2 text-center">K3s</h4>
                 <p className="text-sm text-gray-600 text-center mb-3">50-500+ devices</p>

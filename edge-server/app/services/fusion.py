@@ -24,6 +24,7 @@ from app.adapters import (
     IgnitionAdapter,
     OSIsoftPIAdapter
 )
+from app.services.recommendation_service import RecommendationService
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,9 @@ class FusionService:
         # Device-to-source mappings (which device uses which sources)
         # In production, this would come from database
         self.device_source_mappings: Dict[str, List[str]] = {}
+
+        # Recommendation service for ML-to-PLC control loop
+        self.recommendation_service = RecommendationService()
 
     async def initialize(self):
         """
@@ -413,3 +417,178 @@ class FusionService:
         logger.info(f"   - Data sources: {result['data_sources_used']}")
 
         return result
+
+    async def generate_recommendations(
+        self,
+        device_id: str,
+        fused_data: Dict[str, Any],
+        prediction: Dict[str, Any],
+        ldo_id: Optional[str] = None
+    ) -> List[str]:
+        """
+        Generate ML recommendations for process optimization
+
+        Analyzes sensor data and prediction results to generate actionable
+        recommendations for operators (e.g., "reduce temperature", "increase pressure").
+
+        This is the ML-to-PLC control loop:
+        1. AI detects anomaly/inefficiency
+        2. AI recommends corrective action
+        3. Recommendation goes to operator for approval (Safety Gate 1)
+        4. After approval, write to PLC (Safety Gates 2 & 3)
+
+        Args:
+            device_id: Edge device/camera ID
+            fused_data: Fused data from CIM
+            prediction: AI prediction results
+            ldo_id: Optional LDO ID that triggered this recommendation
+
+        Returns:
+            List of recommendation IDs created
+        """
+        logger.info(f"💡 Generating ML recommendations for device: {device_id}")
+
+        sensor_data = fused_data.get("sensor_data", {})
+        plc_data = sensor_data.get("plc", {})
+
+        if not plc_data:
+            logger.warning("⚠️  No PLC data available, cannot generate recommendations")
+            return []
+
+        recommendation_ids = []
+
+        # =====================================================
+        # TEMPERATURE OPTIMIZATION
+        # =====================================================
+        temperature = plc_data.get("temperature")
+        if temperature and temperature > 85:
+            # Temperature too high - recommend reducing setpoint
+            recommended_temp = min(temperature - 10, 75)  # Target 75°C
+
+            recommendation = {
+                "action_type": "adjust_temperature",
+                "target_parameter": "temperature",
+                "current_value": temperature,
+                "recommended_value": recommended_temp,
+                "unit": "°C",
+                "reasoning": f"Current temperature ({temperature}°C) exceeds optimal range. "
+                             f"Reducing to {recommended_temp}°C will improve quality and reduce defects.",
+                "confidence": prediction.get("confidence", 0.85),
+                "priority": 1 if temperature > 95 else 2,  # High priority if critical
+                "model_version": prediction.get("model_version", "v0.3")
+            }
+
+            try:
+                rec_id = await self.recommendation_service.create_recommendation(
+                    device_id=device_id,
+                    recommendation=recommendation,
+                    ldo_id=ldo_id
+                )
+                recommendation_ids.append(rec_id)
+                logger.info(f"✅ Temperature recommendation created: {rec_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create temperature recommendation: {e}")
+
+        # =====================================================
+        # VIBRATION OPTIMIZATION
+        # =====================================================
+        vibration = plc_data.get("vibration")
+        if vibration and vibration > 4.0:
+            # Vibration too high - recommend reducing RPM
+            recommended_rpm_reduction = 50  # Reduce RPM by 50
+
+            recommendation = {
+                "action_type": "reduce_speed",
+                "target_parameter": "rpm",
+                "current_value": plc_data.get("rpm"),  # May be None
+                "recommended_value": recommended_rpm_reduction,
+                "unit": "RPM",
+                "reasoning": f"Excessive vibration detected ({vibration} mm/s). "
+                             f"Reducing motor speed by {recommended_rpm_reduction} RPM will reduce mechanical stress.",
+                "confidence": prediction.get("confidence", 0.85),
+                "priority": 1 if vibration > 6.0 else 2,
+                "model_version": prediction.get("model_version", "v0.3")
+            }
+
+            try:
+                rec_id = await self.recommendation_service.create_recommendation(
+                    device_id=device_id,
+                    recommendation=recommendation,
+                    ldo_id=ldo_id
+                )
+                recommendation_ids.append(rec_id)
+                logger.info(f"✅ Vibration recommendation created: {rec_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create vibration recommendation: {e}")
+
+        # =====================================================
+        # PRESSURE OPTIMIZATION
+        # =====================================================
+        pressure = plc_data.get("pressure")
+        if pressure and pressure < 85:
+            # Pressure too low - recommend increasing setpoint
+            recommended_pressure = max(pressure + 10, 95)  # Target 95 PSI
+
+            recommendation = {
+                "action_type": "adjust_pressure",
+                "target_parameter": "pressure",
+                "current_value": pressure,
+                "recommended_value": recommended_pressure,
+                "unit": "PSI",
+                "reasoning": f"Low pressure detected ({pressure} PSI). "
+                             f"Increasing to {recommended_pressure} PSI will ensure proper material flow.",
+                "confidence": prediction.get("confidence", 0.85),
+                "priority": 2,
+                "model_version": prediction.get("model_version", "v0.3")
+            }
+
+            try:
+                rec_id = await self.recommendation_service.create_recommendation(
+                    device_id=device_id,
+                    recommendation=recommendation,
+                    ldo_id=ldo_id
+                )
+                recommendation_ids.append(rec_id)
+                logger.info(f"✅ Pressure recommendation created: {rec_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create pressure recommendation: {e}")
+
+        # =====================================================
+        # CYCLE TIME OPTIMIZATION
+        # =====================================================
+        cycle_time = plc_data.get("cycle_time")
+        if cycle_time and cycle_time > 28:
+            # Cycle time too long - recommend optimization
+            recommended_cycle_time = 22  # Target 22 seconds
+
+            recommendation = {
+                "action_type": "optimize_cycle_time",
+                "target_parameter": "cycle_time",
+                "current_value": cycle_time,
+                "recommended_value": recommended_cycle_time,
+                "unit": "seconds",
+                "reasoning": f"Cycle time ({cycle_time}s) is above target. "
+                             f"Optimizing to {recommended_cycle_time}s will increase throughput by "
+                             f"{int((cycle_time - recommended_cycle_time) / cycle_time * 100)}%.",
+                "confidence": prediction.get("confidence", 0.85),
+                "priority": 3,  # Lower priority (optimization, not critical)
+                "model_version": prediction.get("model_version", "v0.3")
+            }
+
+            try:
+                rec_id = await self.recommendation_service.create_recommendation(
+                    device_id=device_id,
+                    recommendation=recommendation,
+                    ldo_id=ldo_id
+                )
+                recommendation_ids.append(rec_id)
+                logger.info(f"✅ Cycle time recommendation created: {rec_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create cycle time recommendation: {e}")
+
+        if recommendation_ids:
+            logger.info(f"✅ Generated {len(recommendation_ids)} recommendations")
+        else:
+            logger.info(f"ℹ️  No recommendations needed - all parameters within optimal range")
+
+        return recommendation_ids

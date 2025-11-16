@@ -16,6 +16,9 @@ import json
 from app.services.context_lookup import ContextLookupService
 from app.services.fusion import FusionService
 from app.services.ldo_generator import LDOGeneratorService
+from app.services.recommendation_service import RecommendationService
+from app.api import recommendations
+from app.api.admin import devices, templates
 
 # Configure logging
 logging.basicConfig(
@@ -35,6 +38,12 @@ app = FastAPI(
 context_service = ContextLookupService()
 fusion_service = FusionService()
 ldo_service = LDOGeneratorService()
+recommendation_service = RecommendationService()
+
+# Include API routers
+app.include_router(recommendations.router)
+app.include_router(devices.router)
+app.include_router(templates.router)
 
 
 # ============================================================================
@@ -143,12 +152,25 @@ async def receive_cid(
         )
         logger.info(f"✅ LDO created: {ldo_id}")
 
+        # Step 6: Generate ML recommendations (if needed)
+        logger.info(f"💡 Analyzing data for ML recommendations")
+        recommendation_ids = await fusion_service.generate_recommendations(
+            device_id=device_id,
+            fused_data=fused_data,
+            prediction=prediction,
+            ldo_id=ldo_id
+        )
+        if recommendation_ids:
+            logger.info(f"✅ Generated {len(recommendation_ids)} recommendations: {recommendation_ids}")
+        else:
+            logger.info(f"ℹ️  No recommendations needed")
+
         # ========================================
         # END OF PATENTED SYNCHRONOUS PROCESS
         # Edge device gets response NOW (~170ms)
         # ========================================
 
-        # Step 6: Upload video to data-ingestion (ASYNC BACKGROUND)
+        # Step 7: Upload video to data-ingestion (ASYNC BACKGROUND)
         if video:
             logger.info(f"📦 Scheduling background upload to data-ingestion...")
             # Read video content before scheduling background task

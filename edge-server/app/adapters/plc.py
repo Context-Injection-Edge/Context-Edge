@@ -33,6 +33,28 @@ class PLCAdapter(DataSourceAdapter):
         """Read sensor data from PLC"""
         raise NotImplementedError
 
+    async def write_register(
+        self,
+        address: int,
+        value: float,
+        data_type: str = "holding"
+    ) -> bool:
+        """
+        Write value to PLC register (SAFETY-CRITICAL)
+
+        This is where ML recommendations become physical actions!
+        ONLY called after operator approval and safety validation.
+
+        Args:
+            address: Register address to write
+            value: Value to write (will be scaled if needed)
+            data_type: Register type ('holding', 'coil', etc.)
+
+        Returns:
+            True if write successful, False otherwise
+        """
+        raise NotImplementedError
+
 
 class ModbusPLCAdapter(PLCAdapter):
     """
@@ -152,6 +174,64 @@ class ModbusPLCAdapter(PLCAdapter):
             logger.error(f"❌ Modbus read error: {e}", exc_info=True)
             return {}
 
+    async def write_register(
+        self,
+        address: int,
+        value: float,
+        data_type: str = "holding"
+    ) -> bool:
+        """
+        Write value to PLC register (SAFETY-CRITICAL)
+
+        This method executes approved ML recommendations by writing to PLC registers.
+
+        SAFETY NOTES:
+        - Only called AFTER operator approval
+        - Only called AFTER range validation
+        - PLC logic provides final safety gate (Safety Gate 3)
+
+        Args:
+            address: Modbus register address (e.g., 40001)
+            value: Value to write (will be converted to integer)
+            data_type: Register type (default: 'holding')
+
+        Returns:
+            True if write successful, False otherwise
+        """
+        if not self.is_connected or not self.client:
+            logger.error("❌ Cannot write - Modbus adapter not connected")
+            return False
+
+        try:
+            unit_id = self.config.get("unit_id", 1)
+
+            # Convert to integer (Modbus registers are 16-bit integers)
+            int_value = int(value)
+
+            logger.info(f"📝 SAFETY-CRITICAL WRITE: Modbus Register {address} = {int_value} (unit={unit_id})")
+
+            # Write to register based on type
+            if data_type == "holding":
+                result = self.client.write_register(address, int_value, unit=unit_id)
+            elif data_type == "coil":
+                bool_value = bool(int_value)
+                result = self.client.write_coil(address, bool_value, unit=unit_id)
+            else:
+                logger.error(f"❌ Unsupported write type: {data_type}")
+                return False
+
+            # Check result
+            if result.isError():
+                logger.error(f"❌ Modbus write error: {result}")
+                return False
+
+            logger.info(f"✅ PLC write successful: Register {address} = {int_value}")
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ PLC write failed: {e}", exc_info=True)
+            return False
+
 
 class OPCUAPLCAdapter(PLCAdapter):
     """
@@ -232,6 +312,58 @@ class OPCUAPLCAdapter(PLCAdapter):
         except Exception as e:
             logger.error(f"❌ OPC UA read error: {e}", exc_info=True)
             return {}
+
+    async def write_register(
+        self,
+        address: int,
+        value: float,
+        data_type: str = "holding"
+    ) -> bool:
+        """
+        Write value to OPC UA node (SAFETY-CRITICAL)
+
+        This method executes approved ML recommendations by writing to OPC UA nodes.
+
+        SAFETY NOTES:
+        - Only called AFTER operator approval
+        - Only called AFTER range validation
+        - PLC logic provides final safety gate (Safety Gate 3)
+
+        Args:
+            address: Node ID or parameter name (will be mapped to node)
+            value: Value to write
+            data_type: Not used for OPC UA (included for interface compatibility)
+
+        Returns:
+            True if write successful, False otherwise
+        """
+        if not self.is_connected or not self.client:
+            logger.error("❌ Cannot write - OPC UA adapter not connected")
+            return False
+
+        try:
+            # Map parameter name to node ID if needed
+            node_mappings = self.config.get("node_mappings", {})
+
+            # If address is a parameter name, look up the node ID
+            if isinstance(address, str) and address in node_mappings:
+                node_id = node_mappings[address]
+            else:
+                # Assume address is already a node ID
+                node_id = str(address)
+
+            logger.info(f"📝 SAFETY-CRITICAL WRITE: OPC UA Node {node_id} = {value}")
+
+            # Get the node and write value
+            node = self.client.get_node(node_id)
+            node.set_value(value)
+
+            logger.info(f"✅ PLC write successful: Node {node_id} = {value}")
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ PLC write failed: {e}", exc_info=True)
+            return False
 
 
 class EthernetIPAdapter(PLCAdapter):

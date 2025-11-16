@@ -1,12 +1,19 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mermaid from 'mermaid';
 
 export default function Home() {
   const diagramRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Only render Mermaid on client (prevents hydration mismatch)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
     // Initialize Mermaid with proper config
     mermaid.initialize({
       startOnLoad: false,
@@ -79,7 +86,7 @@ export default function Home() {
       }
     };
     renderDiagram();
-  }, []);
+  }, [isMounted]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -119,24 +126,44 @@ export default function Home() {
             {/* Left: Main Message */}
             <div>
               <h2 className="text-3xl font-bold mb-6 leading-tight">
-                Stop Manually Labeling.<br/>
-                Start Continuous Learning.
+                Edge AI Platform for<br/>
+                Zero-Effort ML Training Data
               </h2>
               <p className="text-lg text-blue-100 mb-8 leading-relaxed">
-                Context Edge fuses <strong className="text-white">QR codes with real-time sensor data</strong> at the edge,
-                creating 100% accurately labeled training data automatically. No manual annotation.
-                No data scientists labeling images. Just pure, ground-truth data from every production cycle.
+                Context Edge is an <strong className="text-white">edge AI platform</strong> that synchronously fuses
+                <strong className="text-white"> physical context identifiers</strong> (QR, RFID, OCR, barcodes) with
+                <strong className="text-white"> real-time video and sensor streams</strong> directly at the edge—creating
+                100% accurately labeled training data automatically. No cloud dependency. No manual labeling.
+                Sub-100ms decisions where it matters.
               </p>
 
               {/* Key Benefits */}
               <div className="space-y-4 mb-8">
                 <div className="flex items-start">
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-yellow-900 text-sm font-bold">⚡</span>
+                  </div>
+                  <div>
+                    <strong className="text-white">Edge AI Platform:</strong>
+                    <span className="text-blue-100"> Sub-100ms latency • 70% bandwidth reduction • Works air-gapped</span>
+                  </div>
+                </div>
+                <div className="flex items-start">
                   <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
                     <span className="text-green-900 text-sm">✓</span>
                   </div>
                   <div>
-                    <strong className="text-white">100% Accurate Labels:</strong>
-                    <span className="text-blue-100"> QR codes provide physical ground truth</span>
+                    <strong className="text-white">Physical Ground Truth:</strong>
+                    <span className="text-blue-100"> QR, RFID, OCR, barcodes provide 100% accurate context</span>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-green-900 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <strong className="text-white">Real-Time Fusion:</strong>
+                    <span className="text-blue-100"> Video + sensor streams synchronized with context at edge</span>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -145,25 +172,7 @@ export default function Home() {
                   </div>
                   <div>
                     <strong className="text-white">Zero Manual Work:</strong>
-                    <span className="text-blue-100"> Automated labeling saves 90% annotation costs</span>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
-                    <span className="text-green-900 text-sm">✓</span>
-                  </div>
-                  <div>
-                    <strong className="text-white">Real-Time Predictions:</strong>
-                    <span className="text-blue-100"> Sub-100ms edge AI for quality control</span>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
-                    <span className="text-green-900 text-sm">✓</span>
-                  </div>
-                  <div>
-                    <strong className="text-white">Continuous Improvement:</strong>
-                    <span className="text-blue-100"> Models learn from validated production data</span>
+                    <span className="text-blue-100"> Automated labeling saves 90% costs, continuous learning</span>
                   </div>
                 </div>
               </div>
@@ -176,40 +185,59 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Right: The Innovation */}
+            {/* Right: How CIM Works */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h3 className="text-2xl font-bold mb-6 text-yellow-300">The Innovation</h3>
-              <div className="space-y-4 text-blue-100">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-2xl mr-4">📦</div>
-                  <div>
-                    <div className="font-semibold text-white">QR Code Scanning</div>
-                    <div className="text-sm">Operator scans product context</div>
-                  </div>
+              <h3 className="text-2xl font-bold mb-6 text-yellow-300">How CIM Fusion Works</h3>
+
+              {/* Multiple Inputs */}
+              <div className="mb-6">
+                <div className="text-sm text-blue-200 mb-2">STEP 1: Multiple Context Sources</div>
+                <div className="flex flex-wrap gap-2 mb-1">
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">QR Codes</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">RFID Tags</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">OCR Text</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">Barcodes</span>
+                  <span className="px-3 py-1 bg-blue-500/50 rounded-full text-xs text-white">NFC</span>
                 </div>
-                <div className="text-center text-2xl">↓</div>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-2xl mr-4">📊</div>
-                  <div>
-                    <div className="font-semibold text-white">Sensor Data Fusion</div>
-                    <div className="text-sm">Real-time PLC sensor readings</div>
-                  </div>
+              </div>
+
+              <div className="text-center text-3xl text-yellow-300 mb-4">+</div>
+
+              {/* Real-Time Streams */}
+              <div className="mb-6">
+                <div className="text-sm text-blue-200 mb-2">STEP 2: Real-Time Streams</div>
+                <div className="flex flex-wrap gap-2 mb-1">
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Video Streams</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">PLC Sensors</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Temperature</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Vibration</span>
+                  <span className="px-3 py-1 bg-purple-500/50 rounded-full text-xs text-white">Pressure</span>
                 </div>
-                <div className="text-center text-2xl">↓</div>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center text-2xl mr-4">⚡</div>
-                  <div>
-                    <div className="font-semibold text-yellow-300">Context Injection Module (CIM)</div>
-                    <div className="text-sm">Patented synchronous fusion at edge</div>
-                  </div>
+              </div>
+
+              <div className="text-center text-3xl text-yellow-300 mb-4">↓</div>
+
+              {/* CIM Processing */}
+              <div className="bg-yellow-400/20 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="text-3xl mr-3">⚡</div>
+                  <div className="font-bold text-yellow-300 text-lg">EDGE AI</div>
                 </div>
-                <div className="text-center text-2xl">↓</div>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-2xl mr-4">✓</div>
-                  <div>
-                    <div className="font-semibold text-white">Labeled Data Objects (LDOs)</div>
-                    <div className="text-sm">Perfect training data automatically</div>
-                  </div>
+                <div className="text-center text-white font-semibold mb-1">Context Injection Module (CIM)</div>
+                <div className="text-center text-xs text-blue-200">Patented Synchronous Fusion</div>
+                <div className="text-center text-xs text-blue-100 mt-2">Processes locally • Sub-100ms • No cloud needed</div>
+              </div>
+
+              <div className="text-center text-3xl text-green-400 mb-4">↓</div>
+
+              {/* Output */}
+              <div className="bg-green-500/20 border-2 border-green-400 rounded-lg p-4">
+                <div className="flex items-center justify-center">
+                  <div className="text-2xl mr-2">✓</div>
+                  <div className="font-bold text-white">Labeled Data Objects (LDOs)</div>
+                </div>
+                <div className="text-center text-xs text-blue-100 mt-2">
+                  Perfect training data • 100% accurate • Zero manual work
                 </div>
               </div>
             </div>
@@ -465,8 +493,14 @@ export default function Home() {
               <p className="text-gray-900 mb-4">
                 This diagram shows our patented <strong>Context Injection Module (CIM)</strong> - highlighted in gold - which synchronously fuses physical context identifiers with sensor data at the edge. The resulting Labeled Data Objects serve operators (blue), engineers (green), and data scientists (purple).
               </p>
-              <div className="bg-white p-6 rounded-lg border border-gray-300" suppressHydrationWarning>
-                <div ref={diagramRef} className="mermaid" suppressHydrationWarning></div>
+              <div className="bg-white p-6 rounded-lg border border-gray-300">
+                {!isMounted ? (
+                  <div className="text-center py-8 text-gray-500">
+                    Loading diagram...
+                  </div>
+                ) : (
+                  <div ref={diagramRef} className="mermaid"></div>
+                )}
               </div>
             </div>
           </details>

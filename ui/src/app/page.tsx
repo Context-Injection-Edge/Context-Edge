@@ -84,15 +84,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-blue-600 text-white py-12">
+      <header className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-12">
             <div>
-              <h1 className="text-4xl font-bold">
+              <div className="inline-block px-3 py-1 bg-yellow-400 text-gray-900 rounded-full text-xs font-bold mb-3">
+                🏆 PATENTED TECHNOLOGY
+              </div>
+              <h1 className="text-5xl font-bold mb-3">
                 Context Edge
               </h1>
-              <p className="text-xl mt-2">
-                Patented Context Injection Module (CIM) - Empowering Operators, Engineers & Data Scientists
+              <p className="text-xl text-blue-100">
+                Zero-Effort ML Training Data from Your Production Lines
               </p>
             </div>
             <div className="flex gap-3">
@@ -111,18 +114,105 @@ export default function Home() {
             </div>
           </div>
 
-          {/* CTA Section */}
-          <div className="text-center mt-8 pt-8 border-t border-blue-500">
-            <div className="inline-block px-4 py-2 bg-blue-800 rounded-full mb-4">
-              <span className="text-sm font-bold">🏆 PATENTED TECHNOLOGY</span>
+          {/* Hero Value Proposition */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Left: Main Message */}
+            <div>
+              <h2 className="text-3xl font-bold mb-6 leading-tight">
+                Stop Manually Labeling.<br/>
+                Start Continuous Learning.
+              </h2>
+              <p className="text-lg text-blue-100 mb-8 leading-relaxed">
+                Context Edge fuses <strong className="text-white">QR codes with real-time sensor data</strong> at the edge,
+                creating 100% accurately labeled training data automatically. No manual annotation.
+                No data scientists labeling images. Just pure, ground-truth data from every production cycle.
+              </p>
+
+              {/* Key Benefits */}
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-green-900 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <strong className="text-white">100% Accurate Labels:</strong>
+                    <span className="text-blue-100"> QR codes provide physical ground truth</span>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-green-900 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <strong className="text-white">Zero Manual Work:</strong>
+                    <span className="text-blue-100"> Automated labeling saves 90% annotation costs</span>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-green-900 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <strong className="text-white">Real-Time Predictions:</strong>
+                    <span className="text-blue-100"> Sub-100ms edge AI for quality control</span>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <span className="text-green-900 text-sm">✓</span>
+                  </div>
+                  <div>
+                    <strong className="text-white">Continuous Improvement:</strong>
+                    <span className="text-blue-100"> Models learn from validated production data</span>
+                  </div>
+                </div>
+              </div>
+
+              <a
+                href="/downloads"
+                className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition-colors text-lg shadow-lg"
+              >
+                Get Started Now →
+              </a>
             </div>
-            <p className="text-lg mb-4">Real-time operator monitoring • Engineering insights • Automated ML data generation • 70% bandwidth reduction</p>
-            <a
-              href="/downloads"
-              className="inline-block px-8 py-3 bg-white text-blue-600 font-semibold rounded-md hover:bg-gray-100 transition-colors text-lg"
-            >
-              Get Started Now
-            </a>
+
+            {/* Right: The Innovation */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <h3 className="text-2xl font-bold mb-6 text-yellow-300">The Innovation</h3>
+              <div className="space-y-4 text-blue-100">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-2xl mr-4">📦</div>
+                  <div>
+                    <div className="font-semibold text-white">QR Code Scanning</div>
+                    <div className="text-sm">Operator scans product context</div>
+                  </div>
+                </div>
+                <div className="text-center text-2xl">↓</div>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-2xl mr-4">📊</div>
+                  <div>
+                    <div className="font-semibold text-white">Sensor Data Fusion</div>
+                    <div className="text-sm">Real-time PLC sensor readings</div>
+                  </div>
+                </div>
+                <div className="text-center text-2xl">↓</div>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center text-2xl mr-4">⚡</div>
+                  <div>
+                    <div className="font-semibold text-yellow-300">Context Injection Module (CIM)</div>
+                    <div className="text-sm">Patented synchronous fusion at edge</div>
+                  </div>
+                </div>
+                <div className="text-center text-2xl">↓</div>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-2xl mr-4">✓</div>
+                  <div>
+                    <div className="font-semibold text-white">Labeled Data Objects (LDOs)</div>
+                    <div className="text-sm">Perfect training data automatically</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -213,9 +303,9 @@ export default function Home() {
               <p className="text-sm text-gray-700">QR codes provide physical ground truth automatically.</p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform">
-              <div className="text-4xl mb-3">🔌</div>
-              <h4 className="font-bold text-gray-900 mb-2">85%+ PLC Coverage</h4>
-              <p className="text-sm text-gray-700">OPC UA, Modbus, EtherNet/IP, PROFINET, Modbus RTU</p>
+              <div className="text-4xl mb-3">🤖</div>
+              <h4 className="font-bold text-gray-900 mb-2">Continuous Learning</h4>
+              <p className="text-sm text-gray-700">Models improve automatically from validated production data</p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-lg text-center transform hover:scale-105 transition-transform">
               <div className="text-4xl mb-3">💰</div>
@@ -226,18 +316,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Industrial Protocol Coverage - NEW! */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Equipment Compatibility */}
+      <section className="py-16 bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-block px-4 py-2 bg-blue-600 text-white rounded-full mb-4">
-              <span className="text-sm font-bold">✨ NEW: 85%+ PLC MARKET COVERAGE</span>
+            <div className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold mb-4">
+              ✓ Works with Your Existing Equipment
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Works with Virtually Any Industrial PLC
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Seamless Integration with Factory Floor Systems
             </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Context Edge supports 5 major industrial protocols - from Allen-Bradley to Siemens to legacy serial devices
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Context Edge connects to your existing PLCs and sensors—no rip-and-replace required.
+              We speak your equipment's language, covering 85%+ of industrial automation systems.
             </p>
           </div>
 
